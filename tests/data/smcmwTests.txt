@@ -1,0 +1,52 @@
+!! test
+div inside pre
+!! options
+disabled
+!! input
+ test <div>this</div>
+ thing
+!! result
+ test 
+<div>
+  this
+</div><pre>
+thing
+</pre>
+!! end
+
+!! test
+first line lonely comment does not strip newline
+!! input
+<!--test-->
+
+a
+!! result
+<p><br/>
+a
+</p>
+!! end
+
+!! test
+second line lonely comment does strip newline
+!! input
+
+<!--test-->
+a
+!! result
+<p>a
+</p>
+!! end
+
+!! test
+attribute values do not respect bol_skip
+!! input
+*<b id="start
+end">test</b>
+*this
+!! result
+<ul><li><b id="start_end">
+test
+</b></li><li>
+this
+</li></ul>
+!! end

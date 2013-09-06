@@ -1,0 +1,27 @@
+(* testspec.ebnf - Grammar for MediaWiki tests file.
+   Copyright 2013 semantics GmbH
+   Written by Marcus Brinkmann <m.brinkmann@semantics.de>
+*)
+
+document = text @ { element } * $ ;
+
+element = @( article | test ) text ;
+
+cmd = ?/!![ \t]*/? ;
+cmd_end = ?/:?[ \t]*\n/? ;
+
+article = title:article_title text:article_text article_end ;
+article_title = cmd "article" cmd_end @text_line ;
+article_text = cmd "text" cmd_end @text ;
+article_end = cmd "endarticle" cmd_end ;
+
+test = description:test_description [ options:test_options ] [ config:test_config ] input:test_input [ config:test_config ] result:test_result test_end ; 
+test_description = cmd "test" cmd_end @text ;
+test_options = cmd "options" cmd_end @text ;
+test_config = cmd "config" cmd_end @text ;
+test_input = cmd "input" cmd_end @text ;
+test_result = cmd "result" cmd_end @text ;
+test_end = cmd "end" cmd_end ;
+
+text_line = !"!!" ?/.*\n/? ;
+text = { text_line } * ;

@@ -1,0 +1,8 @@
+==NEWS==
+
+This file contains a list of user-visible changes.
+
+===Version 0.1 (2013-09-06)===
+
+* Initial release.
+

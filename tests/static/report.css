@@ -1,0 +1,83 @@
+/* Copyright 2013 semantics GmbH
+   Written by Marcus Brinkmann <m.brinkmann@semantics.de>
+*/
+
+table {
+    margin: 1em 0;
+    background-color: #f9f9f9;
+    border: 1px #aaa solid;
+    border-collapse: collapse;
+    color: black;
+}
+table > tr > th,
+table > tr > td,
+table > * > tr > th,
+table > * > tr > td {
+    border: 1px #aaa solid;
+    padding: 0.2em;
+    vertical-align: top;
+}
+table > tr > th,
+table > * > tr > th {
+    background-color: #f2f2f2;
+    text-align: center;
+}
+
+table > tr.tidy > th,
+table > tr.tidy > td,
+table > * > tr.tidy > td,
+table > * > tr.tidy > th {
+    background-color: #ffff99; 
+}
+
+table > tr.skip > th,
+table > tr.skip > td,
+table > * > tr.skip > td,
+table > * > tr.skip > th {
+    background-color: #888888;
+}
+
+table > tr.fail > th,
+table > tr.fail > td,
+table > * > tr.fail > td,
+table > * > tr.fail > th {
+    background-color: #ffaa99; 
+}
+
+table td > pre {
+  margin-top: 0;
+  margin-bottom: 2;
+}
+
+div.tests
+{
+}
+
+table.tests
+{
+    width: 100%;
+}
+
+td.description > p
+{
+    width: 200px;
+}
+
+td.input > pre
+{
+  width: 350px;
+  overflow: auto;
+}
+
+td.expect > pre
+{
+  width: 350px;
+  overflow: auto;
+}
+
+td.output > pre
+{
+  width: 350px;
+  overflow: auto;
+}
+

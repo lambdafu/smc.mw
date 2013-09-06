@@ -1,0 +1,9 @@
+include setup.py
+include README.mediawiki
+include NEWS.mediawiki
+include LICENSE.txt
+include MANIFEST.in
+include Makefile
+include setup.cfg
+include setup.py
+global-include *.ebnf
