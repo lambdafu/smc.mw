@@ -371,8 +371,8 @@ def css_filter(style):
             try:
                 char = unichr(int(match[1], 16))
             except:
-                # character beyond 0x10ffff
-                char = "?"
+                # invalid codepoint
+                char = u"\ufffd"
         elif match[2]:
             char = match[2]
         else:
