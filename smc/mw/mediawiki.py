@@ -8,6 +8,7 @@ from lxml import etree
 from . mw import mwParser as Parser
 from . semantics import mwSemantics as Semantics
 from . semantics import SemanticsTracer
+from . preprocessor import Preprocessor
 
 class MediaWiki(object):
     """MediaWiki parser.
@@ -19,7 +20,7 @@ class MediaWiki(object):
 
         parser = Parser(parseinfo=False,  whitespace='', nameguard=False)
         ast = parser.parse(wikitext, "document", filename="wikitext",
-                           semantics=SemanticsTracer(Semantics(), trace=False),
+                           semantics=SemanticsTracer(Semantics(parser), trace=False),
                            trace=False, nameguard=False, whitespace='')
         self.ast = ast
 
@@ -31,7 +32,8 @@ class MediaWiki(object):
         """Return the rendered output as element tree."""
         return self.ast
 
-def mediawiki(wikitext):
+def mediawiki(wikitext, title=None):
     """Render the wikitext and return output as HTML string."""
+    wikitext = Preprocessor().expand(title, wikitext)
     mw = MediaWiki(wikitext)
     return mw.as_string()

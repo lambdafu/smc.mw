@@ -18,6 +18,7 @@ from functools import wraps
 from timeit import Timer
 import tidy
 from StringIO import StringIO
+import datetime
 
 from lxml import etree, html
 
@@ -29,6 +30,9 @@ class TestPreprocessor(mw.Preprocessor):
     def __init__(self, *args, **kwargs):
         super(TestPreprocessor, self).__init__(*args, **kwargs)
         self.templates = {}
+
+    def get_time(self, utc=False):
+        return datetime.datetime(1970, 1, 1, 0, 2)
 
     def get_template(self, name):
         name = name.lower()

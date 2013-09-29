@@ -50,3 +50,18 @@ test
 this
 </li></ul>
 !! end
+
+!! article
+Template:wsarg
+!! text
+{{{ foo }}}
+!! endarticle
+
+!! test
+template argument name must be trimmed
+!! input
+{{wsarg|foo=bar}}
+!! result
+<p>bar
+</p>
+!! end

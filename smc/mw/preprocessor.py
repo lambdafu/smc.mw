@@ -8,11 +8,13 @@ from collections import OrderedDict
 import re
 from copy import deepcopy
 from bisect import bisect_left
+import datetime
 
 from lxml import etree
 import sys
 
 from . mw_pre import mw_preParser as PreprocessorParser
+from . settings import Settings
 
 AUTO_NEWLINE_RE = re.compile(r"(?:{\||[:;#*])")
 
@@ -53,10 +55,6 @@ class mw_preSemantics(object):
         return None
 
     def link(self, ast):
-        # It's inconvenient to unwrap the element here (as document
-        # expects each element to be an single Element, and grako uses
-        # lists for itself, so we would need to use a dict instead),
-        # so leave that to expand().
         el = etree.Element("link")
         self._collect_elements(el, ["[["] + ast.content + ["]]"])
         return el
@@ -171,6 +169,99 @@ class PreprocessorFrame(object):
             value = value.strip()
         return value
 
+    def _expand_argument(self, el):
+        name_el = el.iterchildren("name").next()
+        orig_name = self.expand(name_el)
+        name = orig_name.strip()
+        if self.parent is None or not self.has_argument(name):
+            default_count = el.xpath("count(default)")
+            if default_count > 0:
+                default_el = el.iterchildren("default").next()
+                default = self.expand(default_el)
+                return default
+            else:
+                return "{{{" + orig_name + "}}}"
+        else:
+            return self.get_argument(name)
+
+    def _expand_template(self, el):
+        # FIXME: subst, safesubst, msgnw, msg, raw
+        name_el = el.iterchildren("name").next()
+        name = self.expand(name_el).strip()
+        bol = bool(el.get("bol", False))
+
+        magic_word = self.context.expand_magic_word(name)
+        if magic_word is not None:
+            return magic_word
+
+        colon = name.find(":")
+        if colon >= 0:
+            # QUIRK: Named arguments are not parsed for parser functions.
+            args = [name[colon + 1:].strip()]
+            arg_els = el.iterchildren("tplarg")
+            for arg_el in arg_els:
+                arg_value_el = arg_el.iterchildren("value").next()
+                arg_value = self.expand(arg_value_el)
+                arg_name_count = arg_el.xpath("count(name)")
+                if arg_name_count > 0:
+                    arg_name_el = arg_el.iterchildren("name").next()
+                    arg_name = self.expand(arg_name_el)
+                    args.append(arg_name + "=" + arg_value)
+                else:
+                    args.append(arg_value)
+            parser_func = self.context.expand_parser_func(name[:colon], args)
+            if parser_func is not None:
+                return parser_func
+
+        # template_ns = self.context.settings.namespaces.find("template")
+        # namespace, pagename = self.context.settings.canonical_page_name(name, default_namespace=template_ns)
+        template = self.context.get_template(name)
+        if template is None:
+            return "[[Template:" + name + "]]"
+
+        named_arguments = { }
+        unnamed_arguments = []
+        arg_els = el.iterchildren("tplarg")
+        unnamed_index = 0
+
+        for arg_el in arg_els:
+            arg_value_el = arg_el.iterchildren("value").next()
+            arg_name_count = arg_el.xpath("count(name)")
+            if arg_name_count > 0:
+                arg_name_el = arg_el.iterchildren("name").next()
+                # QUIRK: Whitespace around named arguments is removed.
+                arg_name = self.expand(arg_name_el).strip()
+                named_arguments[arg_name] = arg_value_el
+                # QUIRK: Last one wins.
+                try:
+                    index = int(arg_name)
+                except:
+                    index = -1
+                if index >= 1 and index <= len(unnamed_arguments):
+                    unnamed_arguments[index - 1] = None
+            else:
+                unnamed_index = unnamed_index + 1
+                arg_name = str(unnamed_index)
+                unnamed_arguments.append(arg_value_el)
+                # QUIRK: Last one wins.
+                if arg_name in named_arguments:
+                    del named_arguments[arg_name]
+
+        call_stack = self.call_stack.copy()
+        call_stack.add(self.title)
+        title = "Template:" + name
+        new_frame = PreprocessorFrame(self.context, title,
+                                      template, include=True,
+                                      parent=self,
+                                      named_arguments=named_arguments,
+                                      unnamed_arguments=unnamed_arguments,
+                                      call_stack=call_stack)
+        output = new_frame.expand()
+        # See MediaWiki bug #529 (and #6255 for problems).
+        if not bol and AUTO_NEWLINE_RE.match(output):
+            output = "\n" + output
+        return output
+
     def expand(self, dom=None):
         if self.title in self.call_stack:
             return '<span class="error">Template loop detected: [[' + self.title + "]]</span>"
@@ -202,79 +293,10 @@ class PreprocessorFrame(object):
             elif el.tag == "includeonly" and not self.include:
                 skip = True
             elif el.tag == "template":
-                name_el = el.iterchildren("name").next()
-                name = self.expand(name_el).strip()
-                bol = bool(el.get("bol", False))
-
-                colon = name.find(":")
-                # FIXME
-                if not name.lower().startswith("template:") and colon >= 0:
-                    # FIXME: handle namespaces, like {{help:table}}
-                    parser_func = name[:colon]
-                    parser_func_arg = name[colon:]
-                    output = output + "[[ParserFunc:" + parser_func + "]]"
-                else:
-                    template = self.context.get_template(name)
-                    if template is None:
-                        output = output + "[[Template:" + name + "]]"
-                    else:
-                        named_arguments = { }
-                        unnamed_arguments = []
-                        arg_els = el.iterchildren("tplarg")
-                        unnamed_index = 0
-
-                        for arg_el in arg_els:
-                            arg_value_el = arg_el.iterchildren("value").next()
-                            arg_name_count = arg_el.xpath("count(name)")
-                            if arg_name_count > 0:
-                                arg_name_el = arg_el.iterchildren("name").next()
-                                # QUIRK: Whitespace around named arguments is removed.
-                                arg_name = self.expand(arg_name_el).strip()
-                                named_arguments[arg_name] = arg_value_el
-                                # QUIRK: Last one wins.
-                                try:
-                                    index = int(arg_name)
-                                except:
-                                    index = -1
-                                if index >= 1 and index <= len(unnamed_arguments):
-                                    unnamed_arguments[index - 1] = None
-                            else:
-                                unnamed_index = unnamed_index + 1
-                                arg_name = str(unnamed_index)
-                                unnamed_arguments.append(arg_value_el)
-                                # QUIRK: Last one wins.
-                                if arg_name in named_arguments:
-                                    del named_arguments[arg_name]
-
-                        call_stack = self.call_stack.copy()
-                        call_stack.add(self.title)
-                        title = "Template:" + name
-                        new_frame = PreprocessorFrame(self.context, title,
-                                                      template, include=True,
-                                                      parent=self,
-                                                      named_arguments=named_arguments,
-                                                      unnamed_arguments=unnamed_arguments,
-                                                      call_stack=call_stack)
-                        new_output = new_frame.expand()
-                        # See MediaWiki bug #529 (and #6255 for problems).
-                        if not bol and AUTO_NEWLINE_RE.match(new_output):
-                            new_output = "\n" + new_output
-                        output = output + new_output
+                output = output + self._expand_template(el)
                 skip = True
             elif el.tag == "argument":
-                name_el = el.iterchildren("name").next()
-                name = self.expand(name_el)
-                if self.parent is None or not self.has_argument(name):
-                    default_count = el.xpath("count(default)")
-                    if default_count > 0:
-                        default_el = el.iterchildren("default").next()
-                        default = self.expand(default_el)
-                        output = output + default
-                    else:
-                        output = output + "{{{" + name + "}}}"
-                else:
-                    value = self.get_argument(name)
-                    output = output + value
+                output = output + self._expand_argument(el)
                 skip = True
             else:
                 # All other elements are transparent.
@@ -291,9 +313,13 @@ class PreprocessorFrame(object):
         return output
 
 class Preprocessor(object):
-    def __init__(self):
+    def __init__(self, settings=None):
+        if settings is None:
+            settings = Settings()
+        self.settings = settings
+
         # Frames access this context.
-        self.parser = PreprocessorParser(parseinfo=False,  whitespace='',
+        self.parser = PreprocessorParser(parseinfo=False, whitespace='',
                                          nameguard=False)
         self.semantics = mw_preSemantics()
 
@@ -301,5 +327,145 @@ class Preprocessor(object):
         frame = PreprocessorFrame(self, title, text, include=False)
         return frame.expand()
 
+    def get_time(self, utc=False):
+        return datetime.now()
+
+    def expand_magic_word(self, name):
+        if name == "CURRENTMONTH":
+            return self.get_time(utc=True).strftime("%m")
+        elif name == "CURRENTMONTH1":
+            return str(self.get_time(utc=True).month)
+        elif name == "CURRENTMONTHNAME":
+            return self.get_time(utc=True).strftime("%B")
+        elif name == "CURRENTMONTHNAMEGEN":
+            # FIXME: Genitiv form.
+            return self.get_time(utc=True).strftime("%B")
+        elif name == "CURRENTMONTHABBREV":
+            return self.get_time(utc=True).strftime("%b")
+        elif name == "CURRENTDAY":
+            return str(self.get_time(utc=True).day)
+        elif name == "CURRENTDAY2":
+            return self.get_time(utc=True).strftime("%d")
+        elif name == "LOCALMONTH":
+            return self.get_time().strftime("%m")
+        elif name == "LOCALMONTH1":
+            return str(self.get_time().month)
+        elif name == "LOCALMONTHNAME":
+            return self.get_time().strftime("%B")
+        elif name == "LOCALMONTHNAMEGEN":
+            # FIXME: Genitiv form.
+            return self.get_time().strftime("%B")
+        elif name == "LOCALMONTHABBREV":
+            return self.get_time().strftime("%b")
+        elif name == "LOCALDAY":
+            return str(self.get_time().day)
+        elif name == "LOCALDAY2":
+            return self.get_time().strftime("%d")
+        # PAGENAME
+        # PAGENAMEE
+        # FULLPAGENAME
+        # FULLPAGENAMEE
+        # SUBPAGENAME
+        # SUBPAGENAMEE
+        # BASEPAGENAME
+        # BASEPAGENAMEE
+        # TALKPAGENAME
+        # TALKPAGENAMEE
+        # SUBJECTPAGENAME
+        # SUBJECTPAGENAMEE
+        # PAGEID
+        # REVISIONID
+        # REVISIONDAY
+        # REVISIONDAY2
+        # REVISIONMONTH
+        # REVISIONMONTH1
+        # REVISIONYEAR
+        # REVISIONTIMESTAMP
+        # REVISIONUSER
+        # NAMESPACE
+        # NAMESPACEE
+        # NAMESPACENUMBER
+        # TALKSPACE
+        # TALKSPACEE
+        # SUBJECTSPACE
+        # SUBJECTSPACEE
+        elif name == "CURRENTDAYNAME":
+            return self.get_time(utc=True).strftime("%A")
+        elif name == "CURRENTYEAR":
+            return self.get_time(utc=True).strftime("%Y")
+        elif name == "CURRENTTIME":
+            return self.get_time(utc=True).strftime("%H:%M")
+        elif name == "CURRENTHOUR":
+            return self.get_time(utc=True).strftime("%H")
+        elif name == "CURRENTWEEK":
+            # ISO-8601 week numbers start with 1.
+            return str(1 + int(self.get_time(utc=True).strftime("%W")))
+        elif name == "CURRENTDOW":
+            return self.get_time(utc=True).strftime("%w")
+        elif name == "LOCALDAYNAME":
+            return self.get_time().strftime("%A")
+        elif name == "LOCALYEAR":
+            return self.get_time().strftime("%Y")
+        elif name == "LOCALTIME":
+            return self.get_time().strftime("%H:%M")
+        elif name == "LOCALHOUR":
+            return self.get_time().strftime("%H")
+        elif name == "LOCALWEEK":
+            # ISO-8601 week numbers start with 1.
+            return str(1 + int(self.get_time().strftime("%W")))
+        elif name == "LOCALDOW":
+            return self.get_time().strftime("%w")
+        # NUMBEROFARTICLES
+        # NUMBEROFFILES
+        # NUMBEROFUSERS
+        # NUMBEROFACTIVEUSERS
+        # NUMBEROFPAGES
+        # NUMBEROFADMINS
+        # NUMBEROFEDITS
+        # NUMBEROFVIEWS
+        elif name == "CURRENTTIMESTAMP":
+            return self.get_time(utc=True).strftime("%Y%m%d%H%M%S")
+        elif name == "LOCALTIMESTAMP":
+            return self.get_time().strftime("%Y%m%d%H%M%S")
+        # CURRENTVERSION
+        # ARTICLEPATH
+        # SITENAME
+        # SERVER
+        # SERVERNAME
+        # SCRIPTPATH
+        # STYLEPATH
+        # DIRECTIONMARK
+        # CONTENTLANGUAGE
+        else:
+            return None
+
+    def expand_parser_func(self, name, args):
+        args = map(lambda arg: arg.strip(), args)
+        args_cnt = len(args)
+        if name == "lc":
+            return args[0].lower()
+        elif name == "lcfirst":
+            return args[0][:1].lower() + args[0][1:]
+        elif name == "uc":
+            return args[0].upper()
+        elif name == "ucfirst":
+            return args[0][:1].upper() + args[0][1:]            
+        elif name == "#ifeq":
+            if len(args_cnt <= 2):
+                return ""
+            if args[0] == args[1]:
+                return args[2]
+            if args_cnt >= 3:
+                return args[3]
+            return ""
+        elif name == "#if":
+            if len(args_cnt <= 1):
+                return ""
+            if len(args[0]) > 0:
+                return args[1]
+            if args_cnt >= 2:
+                return args[2]
+            return ""
+            
     def get_template(self, name):
         return None
