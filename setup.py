@@ -30,7 +30,7 @@ setup_info = dict(
     keywords="wiki mediawiki parser peg",
     license="BSD",
     description="MediaWiki-compatible parser for Python.",
-    long_description=open("README.mediawiki").read(),
+    long_description=open("README.rst").read(),
     classifiers=(
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",

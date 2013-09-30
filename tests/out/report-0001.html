@@ -5,7 +5,7 @@
 <script src="../static/jquery-1.10.1.min.js"></script><link rel="stylesheet" type="text/css" href="../static/report.css">
 </head>
 <body>
-<h1>smc.mw Test Report, Version 0.1 (2013-09-06)</h1>
+<h1>smc.mw Test Report, Version 0.1 (2013-10-01)</h1>
 <h2>Overview</h2>
 <table>
 <tr>
@@ -32,21 +32,26 @@
 <tr>
 <th rowspan="2">parserTests</th>
 <td colspan="2" rowspan="2">1142</td>
-<td colspan="2" rowspan="2">208 (18.21%)</td>
+<td colspan="2">225 (19.70%)</td>
 <td colspan="2" rowspan="2">156 (13.66%)</td>
 <td colspan="2" rowspan="2">126 (11.03%)</td>
-<td colspan="2" rowspan="2">652 (57.09%)</td>
-<td colspan="2">17.478</td>
+<td colspan="2">635 (55.60%)</td>
+<td colspan="2">19.889</td>
 </tr>
-<tr></tr>
+<tr>
+<td>+6</td>
+<td></td>
+<td></td>
+<td>-6</td>
+</tr>
 <tr>
 <th rowspan="2">smcmwTests</th>
-<td colspan="2" rowspan="2">4</td>
-<td colspan="2" rowspan="2">2 (50.00%)</td>
+<td colspan="2" rowspan="2">5</td>
+<td colspan="2" rowspan="2">3 (60.00%)</td>
 <td colspan="2" rowspan="2">0 (0.00%)</td>
-<td colspan="2" rowspan="2">1 (25.00%)</td>
-<td colspan="2" rowspan="2">1 (25.00%)</td>
-<td colspan="2">0.028</td>
+<td colspan="2" rowspan="2">1 (20.00%)</td>
+<td colspan="2" rowspan="2">1 (20.00%)</td>
+<td colspan="2">0.038</td>
 </tr>
 <tr></tr>
 </table>
@@ -3493,7 +3498,7 @@ second]&#8990;
 <td class="input"><pre>{{localurl:Some page|amp=&amp;}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;/index.php?title=Some_page&amp;amp;amp=&amp;amp;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:localurl" title="ParserFunc:localurl"&gt;ParserFunc:localurl&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:localurl:Some_page" title="Template:localurl:Some page"&gt;Template:localurl:Some page&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -3503,7 +3508,7 @@ second]&#8990;
 <td class="input"><pre>{{localurl:Some page|q=?&amp;amp=&amp;}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;/index.php?title=Some_page&amp;amp;q=?&amp;amp;amp=&amp;amp;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:localurl" title="ParserFunc:localurl"&gt;ParserFunc:localurl&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:localurl:Some_page" title="Template:localurl:Some page"&gt;Template:localurl:Some page&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -5881,114 +5886,114 @@ foo &amp;lt;hr&#8990;
 &lt;p&gt;&amp;lt;/small&amp;gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">365</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTDAY}}</td>
 <td class="input"><pre>{{CURRENTDAY}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;1&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTDAY" title="Template:CURRENTDAY"&gt;Template:CURRENTDAY&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;1&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">366</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTDAY2}}</td>
 <td class="input"><pre>{{CURRENTDAY2}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;01&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTDAY2" title="Template:CURRENTDAY2"&gt;Template:CURRENTDAY2&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;01&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">367</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTDAYNAME}}</td>
 <td class="input"><pre>{{CURRENTDAYNAME}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Thursday&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTDAYNAME" title="Template:CURRENTDAYNAME"&gt;Template:CURRENTDAYNAME&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;Thursday&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">368</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTDOW}}</td>
 <td class="input"><pre>{{CURRENTDOW}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;4&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTDOW" title="Template:CURRENTDOW"&gt;Template:CURRENTDOW&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;4&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">369</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTMONTH}}</td>
 <td class="input"><pre>{{CURRENTMONTH}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;01&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTMONTH" title="Template:CURRENTMONTH"&gt;Template:CURRENTMONTH&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;01&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">370</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTMONTHABBREV}}</td>
 <td class="input"><pre>{{CURRENTMONTHABBREV}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Jan&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTMONTHABBREV" title="Template:CURRENTMONTHABBREV"&gt;Template:CURRENTMONTHABBREV&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;Jan&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">371</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTMONTHNAME}}</td>
 <td class="input"><pre>{{CURRENTMONTHNAME}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;January&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTMONTHNAME" title="Template:CURRENTMONTHNAME"&gt;Template:CURRENTMONTHNAME&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;January&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">372</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTMONTHNAMEGEN}}</td>
 <td class="input"><pre>{{CURRENTMONTHNAMEGEN}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;January&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTMONTHNAMEGEN" title="Template:CURRENTMONTHNAMEGEN"&gt;Template:CURRENTMONTHNAMEGEN&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;January&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">373</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTTIME}}</td>
 <td class="input"><pre>{{CURRENTTIME}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;00:02&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTTIME" title="Template:CURRENTTIME"&gt;Template:CURRENTTIME&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;00:02&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">374</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTWEEK}} (@bug 4594)</td>
 <td class="input"><pre>{{CURRENTWEEK}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;1&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTWEEK" title="Template:CURRENTWEEK"&gt;Template:CURRENTWEEK&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;1&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass">
 <th class="index">375</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Magic Word: {{CURRENTYEAR}}</td>
 <td class="input"><pre>{{CURRENTYEAR}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;1970&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:CURRENTYEAR" title="Template:CURRENTYEAR"&gt;Template:CURRENTYEAR&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;1970&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6194,8 +6199,8 @@ Aoeu&#8990;
 &lt;a rel="nofollow" class="external free" href="http://example.org"&gt;http://example.org&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 <td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:sErVeRNaMe" title="Template:sErVeRNaMe"&gt;Template:sErVeRNaMe&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:LCFirst" title="ParserFunc:LCFirst"&gt;ParserFunc:LCFirst&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:ucFIRST" title="ParserFunc:ucFIRST"&gt;ParserFunc:ucFIRST&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:LCFirst:AOEU" title="Template:LCFirst:AOEU"&gt;Template:LCFirst:AOEU&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:ucFIRST:aoeu" title="Template:ucFIRST:aoeu"&gt;Template:ucFIRST:aoeu&lt;/a&gt;&#8990;
 &lt;a href="/wiki/Template:SERver" title="Template:SERver"&gt;Template:SERver&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
@@ -6206,7 +6211,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:1}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Talk&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:1" title="Template:ns:1"&gt;Template:ns:1&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6216,7 +6221,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:01}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Talk&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:01" title="Template:ns:01"&gt;Template:ns:01&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6225,7 +6230,7 @@ Aoeu&#8990;
 <td class="description">Namespace 0 {{ns:0}} (bug 4783)</td>
 <td class="input"><pre>{{ns:0}}</pre></td>
 <td class="expect"><pre></pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:0" title="Template:ns:0"&gt;Template:ns:0&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6234,7 +6239,7 @@ Aoeu&#8990;
 <td class="description">Namespace 0 {{ns:00}} (bug 4783)</td>
 <td class="input"><pre>{{ns:00}}</pre></td>
 <td class="expect"><pre></pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:00" title="Template:ns:00"&gt;Template:ns:00&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6244,7 +6249,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:-1}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Special&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:-1" title="Template:ns:-1"&gt;Template:ns:-1&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6254,7 +6259,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:User}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;User&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:User" title="Template:ns:User"&gt;Template:ns:User&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6264,7 +6269,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:User_talk}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;User talk&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:User_talk" title="Template:ns:User_talk"&gt;Template:ns:User_talk&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6274,7 +6279,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:uSeR tAlK}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;User talk&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:uSeR_tAlK" title="Template:ns:uSeR tAlK"&gt;Template:ns:uSeR tAlK&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6284,7 +6289,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:File}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;File&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:File" title="Template:ns:File"&gt;Template:ns:File&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6294,7 +6299,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:Image}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;File&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:Image" title="Template:ns:Image"&gt;Template:ns:Image&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6305,7 +6310,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:User}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Benutzer&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:User" title="Template:ns:User"&gt;Template:ns:User&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6316,7 +6321,7 @@ Aoeu&#8990;
 <td class="input"><pre>{{ns:3}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Benutzer Diskussion&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ns" title="ParserFunc:ns"&gt;ParserFunc:ns&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ns:3" title="Template:ns:3"&gt;Template:ns:3&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6332,10 +6337,10 @@ hi_world%3F!&#8990;
 hi%20world%3F%21&#8990;
 hi+world%3F%21&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:urlencode" title="ParserFunc:urlencode"&gt;ParserFunc:urlencode&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:urlencode" title="ParserFunc:urlencode"&gt;ParserFunc:urlencode&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:urlencode" title="ParserFunc:urlencode"&gt;ParserFunc:urlencode&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:urlencode" title="ParserFunc:urlencode"&gt;ParserFunc:urlencode&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:urlencode:hi_world?!" title="Template:urlencode:hi world?!"&gt;Template:urlencode:hi world?!&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:urlencode:hi_world?!" title="Template:urlencode:hi world?!"&gt;Template:urlencode:hi world?!&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:urlencode:hi_world?!" title="Template:urlencode:hi world?!"&gt;Template:urlencode:hi world?!&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:urlencode:hi_world?!" title="Template:urlencode:hi world?!"&gt;Template:urlencode:hi world?!&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -6645,7 +6650,7 @@ hi+world%3F%21&#8990;
 <td class="input"><pre>{{:Main Page}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;blah blah&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:" title="ParserFunc:"&gt;ParserFunc:&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template::Main_Page" title="Template::Main Page"&gt;Template::Main Page&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="tidy">
@@ -6737,7 +6742,7 @@ hi+world%3F%21&#8990;
 <td class="input"><pre>{{int:youhavenewmessages|lots of money|not!}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;You have lots of money (not!).&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:int" title="ParserFunc:int"&gt;ParserFunc:int&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:int:youhavenewmessages" title="Template:int:youhavenewmessages"&gt;Template:int:youhavenewmessages&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="pass">
@@ -7595,24 +7600,24 @@ unused}}}}</pre></td>
 &lt;/p&gt;</pre></td>
 <td class="output"><pre></pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass from_fail to_pass">
 <th class="index">513</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Parser Functions: 1. Simple example</td>
 <td class="input"><pre>{{uc:foo}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;FOO&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:uc" title="ParserFunc:uc"&gt;ParserFunc:uc&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;FOO&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass from_fail to_pass">
 <th class="index">514</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Parser Functions: 2. Nested use (only outermost should be marked up)</td>
 <td class="input"><pre>{{uc:{{lc:FOO}}}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;FOO&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:uc" title="ParserFunc:uc"&gt;ParserFunc:uc&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;FOO&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="skip">
@@ -7785,7 +7790,7 @@ unused}}}}</pre></td>
 <td class="input"><pre>{{SafeSubstTest}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Foobar&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:safesubst" title="ParserFunc:safesubst"&gt;ParserFunc:safesubst&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:safesubst:Includes" title="Template:safesubst:Includes"&gt;Template:safesubst:Includes&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -7795,7 +7800,7 @@ unused}}}}</pre></td>
 <td class="input"><pre>{{SubstTest}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;{{subst:Includes}}&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:subst" title="ParserFunc:subst"&gt;ParserFunc:subst&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:subst:Includes" title="Template:subst:Includes"&gt;Template:subst:Includes&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="skip">
@@ -9052,7 +9057,7 @@ Add test with existing image page
 <td class="input"><pre>{{PAGESINCATEGORY:&lt;bogus&gt;}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;0&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:PAGESINCATEGORY" title="ParserFunc:PAGESINCATEGORY"&gt;ParserFunc:PAGESINCATEGORY&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:PAGESINCATEGORY:&amp;lt;bogus&amp;gt;" title="Template:PAGESINCATEGORY:&amp;lt;bogus&amp;gt;"&gt;Template:PAGESINCATEGORY:&amp;lt;bogus&amp;gt;&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -11518,7 +11523,7 @@ New wiki paragraph</pre></td>
 <td class="input"><pre>{{Special:Prefixindex/Xyzzyx}}</pre></td>
 <td class="expect"><pre>&lt;table id="mw-prefixindex-list-table"&gt;&lt;tr&gt;&lt;td&gt;&lt;a href="/wiki/Xyzzyx" title="Xyzzyx"&gt;Xyzzyx&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#8990;
 </pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:Special" title="ParserFunc:Special"&gt;ParserFunc:Special&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:Special:Prefixindex/Xyzzyx" title="Template:Special:Prefixindex/Xyzzyx"&gt;Template:Special:Prefixindex/Xyzzyx&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -11530,8 +11535,8 @@ New wiki paragraph</pre></td>
 <td class="expect"><pre>&lt;table id="mw-prefixindex-list-table"&gt;&lt;tr&gt;&lt;td&gt;&lt;a href="/wiki/Xyzzyx" title="Xyzzyx"&gt;Xyzzyx&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#8990;
 &lt;table id="mw-prefixindex-list-table"&gt;&lt;tr&gt;&lt;td&gt;&lt;a href="/wiki/Xyzzyx" title="Xyzzyx"&gt;Xyzzyx&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&#8990;
 </pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:Special" title="ParserFunc:Special"&gt;ParserFunc:Special&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:Special" title="ParserFunc:Special"&gt;ParserFunc:Special&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:Special:Prefixindex/Xyzzyx" title="Template:Special:Prefixindex/Xyzzyx"&gt;Template:Special:Prefixindex/Xyzzyx&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:Special:Prefixindex/Xyzzyx" title="Template:Special:Prefixindex/Xyzzyx"&gt;Template:Special:Prefixindex/Xyzzyx&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -11541,7 +11546,7 @@ New wiki paragraph</pre></td>
 <td class="input"><pre>{{MediaWiki:Mainpage}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Main Page&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:MediaWiki" title="ParserFunc:MediaWiki"&gt;ParserFunc:MediaWiki&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:MediaWiki:Mainpage" title="Template:MediaWiki:Mainpage"&gt;Template:MediaWiki:Mainpage&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -11551,7 +11556,7 @@ New wiki paragraph</pre></td>
 <td class="input"><pre>{{MediaWiki:Mainpagexxx}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;a href="/index.php?title=MediaWiki:Mainpagexxx&amp;amp;action=edit&amp;amp;redlink=1" class="new" title="MediaWiki:Mainpagexxx (page does not exist)"&gt;MediaWiki:Mainpagexxx&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:MediaWiki" title="ParserFunc:MediaWiki"&gt;ParserFunc:MediaWiki&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:MediaWiki:Mainpagexxx" title="Template:MediaWiki:Mainpagexxx"&gt;Template:MediaWiki:Mainpagexxx&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -11561,7 +11566,7 @@ New wiki paragraph</pre></td>
 <td class="input"><pre>{{MediaWiki:history_short}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;History&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:MediaWiki" title="ParserFunc:MediaWiki"&gt;ParserFunc:MediaWiki&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:MediaWiki:history_short" title="Template:MediaWiki:history_short"&gt;Template:MediaWiki:history_short&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -11571,7 +11576,7 @@ New wiki paragraph</pre></td>
 <td class="input"><pre>{{MediaWiki:history short}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;History&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:MediaWiki" title="ParserFunc:MediaWiki"&gt;ParserFunc:MediaWiki&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:MediaWiki:history_short" title="Template:MediaWiki:history short"&gt;Template:MediaWiki:history short&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="pass">
@@ -12402,7 +12407,7 @@ a&lt;/a&gt;&#8990;
 <td class="input"><pre>{{Special:search}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;a href="/wiki/Special:Search" title="Special:Search"&gt;Special:Search&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:Special" title="ParserFunc:Special"&gt;ParserFunc:Special&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:Special:search" title="Template:Special:search"&gt;Template:Special:search&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -13083,7 +13088,7 @@ __FORCETOC__</pre></td>
 <td class="input"><pre>{{MSGNW:msg}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&amp;#91;&amp;#91;:Template:Msg&amp;#93;&amp;#93;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:MSGNW" title="ParserFunc:MSGNW"&gt;ParserFunc:MSGNW&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:MSGNW:msg" title="Template:MSGNW:msg"&gt;Template:MSGNW:msg&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -13093,7 +13098,7 @@ __FORCETOC__</pre></td>
 <td class="input"><pre>{{RAW:QUERTY}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;a href="/index.php?title=Template:QUERTY&amp;amp;action=edit&amp;amp;redlink=1" class="new" title="Template:QUERTY (page does not exist)"&gt;Template:QUERTY&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:RAW" title="ParserFunc:RAW"&gt;ParserFunc:RAW&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:RAW:QUERTY" title="Template:RAW:QUERTY"&gt;Template:RAW:QUERTY&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="pass">
@@ -13126,8 +13131,8 @@ This is a test template&#8990;
 <td class="input"><pre>{{MediaWiki:Fake}}</pre></td>
 <td class="expect"><pre>&lt;h2&gt;&lt;span class="mw-headline" id="header"&gt;header&lt;/span&gt;&lt;span class="mw-editsection"&gt;&lt;span class="mw-editsection-bracket"&gt;[&lt;/span&gt;&lt;a href="/index.php?title=MediaWiki:Fake&amp;amp;action=edit&amp;amp;section=T-1" title="MediaWiki:Fake"&gt;edit&lt;/a&gt;&lt;span class="mw-editsection-bracket"&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/h2&gt;&#8990;
 </pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:MediaWiki" title="ParserFunc:MediaWiki"&gt;ParserFunc:MediaWiki&lt;/a&gt;&#8990;
-&lt;/p&gt;</pre></td>
+<td class="output"><pre>&lt;h2&gt;&lt;span class="mw-headline" id="header"&gt;header&lt;/span&gt;&lt;span class="mw-editsection"&gt;&lt;span class="mw-editsection-bracket"&gt;[&lt;/span&gt;&lt;a href="" title="Edit section: header"&gt;edit&lt;/a&gt;&lt;span class="mw-editsection-bracket"&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/h2&gt;&#8990;
+</pre></td>
 </tr>
 <tr class="fail">
 <th class="index">892</th>
@@ -13250,7 +13255,7 @@ ISBN 1 234 56789 0 - 2006</pre></td>
 <td class="input"><pre>{{anchorencode:foo bar&#169;#%n}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;foo_bar.C2.A9.23.25n&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:anchorencode" title="ParserFunc:anchorencode"&gt;ParserFunc:anchorencode&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:anchorencode:foo_bar&amp;#169;#%n" title="Template:anchorencode:foo bar&amp;#169;#%n"&gt;Template:anchorencode:foo bar&amp;#169;#%n&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -13260,7 +13265,7 @@ ISBN 1 234 56789 0 - 2006</pre></td>
 <td class="input"><pre>{{anchorencode: __pretty__please__}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;pretty_please&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:anchorencode" title="ParserFunc:anchorencode"&gt;ParserFunc:anchorencode&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:anchorencode:___pretty__please__" title="Template:anchorencode: __pretty__please__"&gt;Template:anchorencode: __pretty__please__&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -13270,7 +13275,7 @@ ISBN 1 234 56789 0 - 2006</pre></td>
 <td class="input"><pre>{{anchorencode: [[hello|world]] [[hi]]}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;world_hi&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:anchorencode" title="ParserFunc:anchorencode"&gt;ParserFunc:anchorencode&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/BROKEN" title="BROKEN"&gt;BROKEN&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -13280,7 +13285,7 @@ ISBN 1 234 56789 0 - 2006</pre></td>
 <td class="input"><pre>{{anchorencode: {{Foo}} }}</pre></td>
 <td class="expect"><pre>&lt;p&gt;FOO&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:anchorencode" title="ParserFunc:anchorencode"&gt;ParserFunc:anchorencode&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:anchorencode:_FOO" title="Template:anchorencode: FOO"&gt;Template:anchorencode: FOO&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -13294,7 +13299,7 @@ __NOEDITSECTION__</pre></td>
 &lt;p&gt;.2B:.3A.253A.26.26.5D.5D&#8990;
 &lt;/p&gt;</pre></td>
 <td class="output"><pre>&lt;h3&gt;&lt;span class="mw-headline" id="_ +:.3A%3A&amp;amp;&amp;amp;amp;]]"&gt;_ +:.3A%3A&amp;amp;&amp;amp;amp;]]&lt;/span&gt;&lt;span class="mw-editsection"&gt;&lt;span class="mw-editsection-bracket"&gt;[&lt;/span&gt;&lt;a href="" title="Edit section: _ +:.3A%3A&amp;amp;&amp;amp;amp;]]"&gt;edit&lt;/a&gt;&lt;span class="mw-editsection-bracket"&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/h3&gt;&#8990;
-&lt;p&gt;&lt;a href="/wiki/ParserFunc:anchorencode" title="ParserFunc:anchorencode"&gt;ParserFunc:anchorencode&lt;/a&gt;&#8990;
+&lt;p&gt;&lt;a href="/wiki/Template:anchorencode:___+:.3A%3A&amp;amp;&amp;amp;" title="Template:anchorencode: _ +:.3A%3A&amp;amp;&amp;amp;"&gt;Template:anchorencode: _ +:.3A%3A&amp;amp;&amp;amp;&lt;/a&gt;]]&#8990;
 __NOEDITSECTION__&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
@@ -13886,18 +13891,18 @@ y</pre></td>
 &lt;/li&gt;&lt;li&gt; bar&#8990;
 &lt;/li&gt;&lt;/ul&gt;&#8990;
 </pre></td>
-<td class="output"><pre>&lt;ul&gt;&lt;li&gt; Foo &lt;a href="/wiki/ParserFunc:lc" title="ParserFunc:lc"&gt;ParserFunc:lc&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;ul&gt;&lt;li&gt; Foo * bar&#8990;
 &lt;/li&gt;&lt;/ul&gt;&#8990;
 </pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass from_fail to_pass">
 <th class="index">941</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Bug 5678: Double-parsed template argument</td>
 <td class="input"><pre>{{lc:{{{1}}}|hello}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;{{{1}}}&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:lc" title="ParserFunc:lc"&gt;ParserFunc:lc&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;{{{1}}}&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -13907,7 +13912,7 @@ y</pre></td>
 <td class="input"><pre>{{lc:{{paramtest {{!}} param = hello }} }}</pre></td>
 <td class="expect"><pre>&lt;p&gt;{{paramtest | param = hello }}&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:lc" title="ParserFunc:lc"&gt;ParserFunc:lc&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/template:paramtest" title="template:paramtest"&gt;param = hello&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -13935,14 +13940,14 @@ y</pre></td>
 &#282;&#352;&#268;&#344;&#8990;
 &#282;&#352;&#268;&#344;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:PRVN&amp;#205;VELK&amp;#201;" title="ParserFunc:PRVN&amp;#205;VELK&amp;#201;"&gt;ParserFunc:PRVN&amp;#205;VELK&amp;#201;&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:prvn&amp;#237;velk&amp;#233;" title="ParserFunc:prvn&amp;#237;velk&amp;#233;"&gt;ParserFunc:prvn&amp;#237;velk&amp;#233;&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:PRVN&amp;#205;MAL&amp;#201;" title="ParserFunc:PRVN&amp;#205;MAL&amp;#201;"&gt;ParserFunc:PRVN&amp;#205;MAL&amp;#201;&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:prvn&amp;#237;mal&amp;#233;" title="ParserFunc:prvn&amp;#237;mal&amp;#233;"&gt;ParserFunc:prvn&amp;#237;mal&amp;#233;&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:MAL&amp;#193;" title="ParserFunc:MAL&amp;#193;"&gt;ParserFunc:MAL&amp;#193;&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:mal&amp;#225;" title="ParserFunc:mal&amp;#225;"&gt;ParserFunc:mal&amp;#225;&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:VELK&amp;#193;" title="ParserFunc:VELK&amp;#193;"&gt;ParserFunc:VELK&amp;#193;&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:velk&amp;#225;" title="ParserFunc:velk&amp;#225;"&gt;ParserFunc:velk&amp;#225;&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:PRVN&amp;#205;VELK&amp;#201;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;" title="Template:PRVN&amp;#205;VELK&amp;#201;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;"&gt;Template:PRVN&amp;#205;VELK&amp;#201;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:prvn&amp;#237;velk&amp;#233;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;" title="Template:prvn&amp;#237;velk&amp;#233;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;"&gt;Template:prvn&amp;#237;velk&amp;#233;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:PRVN&amp;#205;MAL&amp;#201;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;" title="Template:PRVN&amp;#205;MAL&amp;#201;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;"&gt;Template:PRVN&amp;#205;MAL&amp;#201;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:prvn&amp;#237;mal&amp;#233;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;" title="Template:prvn&amp;#237;mal&amp;#233;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;"&gt;Template:prvn&amp;#237;mal&amp;#233;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:MAL&amp;#193;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;" title="Template:MAL&amp;#193;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;"&gt;Template:MAL&amp;#193;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:mal&amp;#225;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;" title="Template:mal&amp;#225;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;"&gt;Template:mal&amp;#225;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:VELK&amp;#193;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;" title="Template:VELK&amp;#193;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;"&gt;Template:VELK&amp;#193;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:velk&amp;#225;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;" title="Template:velk&amp;#225;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;"&gt;Template:velk&amp;#225;:&amp;#283;&amp;#353;&amp;#269;&amp;#345;&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="tidy">
@@ -14251,7 +14256,7 @@ Line two&#8990;
 <td class="input"><pre>{{padleft:-Hello|7|&#198;}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&#198;-Hello&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:padleft" title="ParserFunc:padleft"&gt;ParserFunc:padleft&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:padleft:-Hello" title="Template:padleft:-Hello"&gt;Template:padleft:-Hello&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14261,7 +14266,7 @@ Line two&#8990;
 <td class="input"><pre>{{padright:Hello-|7|&#198;}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Hello-&#198;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:padright" title="ParserFunc:padright"&gt;ParserFunc:padright&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:padright:Hello-" title="Template:padright:Hello-"&gt;Template:padright:Hello-&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14271,7 +14276,7 @@ Line two&#8990;
 <td class="input"><pre>{{#formatdate:2009-03-24}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;span class="mw-formatted-date" title="2009-03-24"&gt;2009-03-24&lt;/span&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:#formatdate" title="ParserFunc:#formatdate"&gt;ParserFunc:#formatdate&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:#formatdate:2009-03-24" title="Template:#formatdate:2009-03-24"&gt;Template:#formatdate:2009-03-24&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14281,7 +14286,7 @@ Line two&#8990;
 <td class="input"><pre>{{#formatdate:2009-03-24|mdy}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;span class="mw-formatted-date" title="2009-03-24"&gt;March 24, 2009&lt;/span&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:#formatdate" title="ParserFunc:#formatdate"&gt;ParserFunc:#formatdate&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:#formatdate:2009-03-24" title="Template:#formatdate:2009-03-24"&gt;Template:#formatdate:2009-03-24&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14291,7 +14296,7 @@ Line two&#8990;
 <td class="input"><pre>{{#formatdate:January 15}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;span class="mw-formatted-date" title="01-15"&gt;January 15&lt;/span&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:#formatdate" title="ParserFunc:#formatdate"&gt;ParserFunc:#formatdate&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:#formatdate:January_15" title="Template:#formatdate:January 15"&gt;Template:#formatdate:January 15&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14305,7 +14310,7 @@ Line two&#8990;
 <td class="input"><pre>{{#formatdate:2009-03-24|dmy}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;span class="mw-formatted-date" title="2009-03-24"&gt;24 March 2009&lt;/span&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:#formatdate" title="ParserFunc:#formatdate"&gt;ParserFunc:#formatdate&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:#formatdate:2009-03-24" title="Template:#formatdate:2009-03-24"&gt;Template:#formatdate:2009-03-24&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14534,7 +14539,7 @@ Bar foo</pre></td>
 &lt;p&gt;this is not the the title&#8990;
 &lt;/p&gt;</pre></td>
 <td class="output"><pre>&lt;p&gt;this is not the the title&#8990;
-&lt;a href="/wiki/ParserFunc:DISPLAYTITLE" title="ParserFunc:DISPLAYTITLE"&gt;ParserFunc:DISPLAYTITLE&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:DISPLAYTITLE:whatever" title="Template:DISPLAYTITLE:whatever"&gt;Template:DISPLAYTITLE:whatever&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14551,7 +14556,7 @@ Bar foo</pre></td>
 &lt;p&gt;this is not the the title&#8990;
 &lt;/p&gt;</pre></td>
 <td class="output"><pre>&lt;p&gt;this is not the the title&#8990;
-&lt;a href="/wiki/ParserFunc:DISPLAYTITLE" title="ParserFunc:DISPLAYTITLE"&gt;ParserFunc:DISPLAYTITLE&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:DISPLAYTITLE:whatever" title="Template:DISPLAYTITLE:whatever"&gt;Template:DISPLAYTITLE:whatever&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14568,7 +14573,7 @@ Bar foo</pre></td>
 &lt;p&gt;this is not the the title&#8990;
 &lt;/p&gt;</pre></td>
 <td class="output"><pre>&lt;p&gt;this is not the the title&#8990;
-&lt;a href="/wiki/ParserFunc:DISPLAYTITLE" title="ParserFunc:DISPLAYTITLE"&gt;ParserFunc:DISPLAYTITLE&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:DISPLAYTITLE:screen" title="Template:DISPLAYTITLE:screen"&gt;Template:DISPLAYTITLE:screen&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14586,7 +14591,7 @@ Bar foo</pre></td>
 &lt;a href="/index.php?title=Template:DISPLAYTITLE:screen&amp;amp;action=edit&amp;amp;redlink=1" class="new" title="Template:DISPLAYTITLE:screen (page does not exist)"&gt;Template:DISPLAYTITLE:screen&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 <td class="output"><pre>&lt;p&gt;this is not the the title&#8990;
-&lt;a href="/wiki/ParserFunc:DISPLAYTITLE" title="ParserFunc:DISPLAYTITLE"&gt;ParserFunc:DISPLAYTITLE&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:DISPLAYTITLE:screen" title="Template:DISPLAYTITLE:screen"&gt;Template:DISPLAYTITLE:screen&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14618,7 +14623,7 @@ Bar foo</pre></td>
 &lt;p&gt;this is not the the title&#8990;
 &lt;/p&gt;</pre></td>
 <td class="output"><pre>&lt;p&gt;this is not the the title&#8990;
-&lt;a href="/wiki/ParserFunc:DISPLAYTITLE" title="ParserFunc:DISPLAYTITLE"&gt;ParserFunc:DISPLAYTITLE&lt;/a&gt;&#8990;
+&lt;a href="/wiki/BROKEN" title="BROKEN"&gt;BROKEN&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14635,7 +14640,7 @@ Bar foo</pre></td>
 &lt;p&gt;this is not the the title&#8990;
 &lt;/p&gt;</pre></td>
 <td class="output"><pre>&lt;p&gt;this is not the the title&#8990;
-&lt;a href="/wiki/ParserFunc:DISPLAYTITLE" title="ParserFunc:DISPLAYTITLE"&gt;ParserFunc:DISPLAYTITLE&lt;/a&gt;&#8990;
+&lt;a href="/wiki/BROKEN" title="BROKEN"&gt;BROKEN&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14675,7 +14680,7 @@ Bar foo</pre></td>
 </td>
 <td class="input"><pre>* &lt;!-- Hello --&gt; ''{{world}}'' {{&lt;includeonly&gt;subst:&lt;/includeonly&gt;How are you}}{{ {{{|safesubst:}}} #if:1|2|3}}</pre></td>
 <td class="expect"><pre>* &lt;!-- Hello --&gt; ''{{world}}'' {{subst:How are you}}{{ {{{|safesubst:}}} #if:1|2|3}}</pre></td>
-<td class="output"><pre>&lt;ul&gt;&lt;li&gt;  &lt;i&gt;&lt;a href="/wiki/Template:world" title="Template:world"&gt;Template:world&lt;/a&gt;&lt;/i&gt; &lt;a href="/wiki/Template:How_are_you" title="Template:How are you"&gt;Template:How are you&lt;/a&gt;&lt;a href="/wiki/ParserFunc:safesubst" title="ParserFunc:safesubst"&gt;ParserFunc:safesubst&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;ul&gt;&lt;li&gt;  &lt;i&gt;&lt;a href="/wiki/Template:world" title="Template:world"&gt;Template:world&lt;/a&gt;&lt;/i&gt; &lt;a href="/wiki/Template:How_are_you" title="Template:How are you"&gt;Template:How are you&lt;/a&gt;&lt;a href="/wiki/Template:safesubst:_#if:1" title="Template:safesubst: #if:1"&gt;Template:safesubst: #if:1&lt;/a&gt;&#8990;
 &lt;/li&gt;&lt;/ul&gt;&#8990;
 </pre></td>
 </tr>
@@ -14788,19 +14793,19 @@ Bar foo</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;span class="error"&gt;Template loop detected: &lt;a href="/wiki/Template:Identical" title="Template:Identical"&gt;Template:Identical&lt;/a&gt;&lt;/span&gt;&#8990;
 &lt;span class="error"&gt;Template loop detected: &lt;a href="/wiki/Template:Identical" title="Template:Identical"&gt;Template:Identical&lt;/a&gt;&lt;/span&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:int" title="ParserFunc:int"&gt;ParserFunc:int&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:int" title="ParserFunc:int"&gt;ParserFunc:int&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:int:loop1" title="Template:int:loop1"&gt;Template:int:loop1&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:int:loop2" title="Template:int:loop2"&gt;Template:int:loop2&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass from_fail to_pass">
 <th class="index">1008</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Bug31490 Turkish: ucfirst 'blah'<ul><li>language: tr</li></ul>
 </td>
 <td class="input"><pre>{{ucfirst:blah}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;Blah&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ucfirst" title="ParserFunc:ucfirst"&gt;ParserFunc:ucfirst&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;Blah&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14811,18 +14816,18 @@ Bar foo</pre></td>
 <td class="input"><pre>{{ucfirst:ix}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&#304;x&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ucfirst" title="ParserFunc:ucfirst"&gt;ParserFunc:ucfirst&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;Ix&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass from_fail to_pass">
 <th class="index">1010</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Bug31490 Turkish: lcfirst 'BLAH'<ul><li>language: tr</li></ul>
 </td>
 <td class="input"><pre>{{lcfirst:BLAH}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;bLAH&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:lcfirst" title="ParserFunc:lcfirst"&gt;ParserFunc:lcfirst&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;bLAH&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14833,7 +14838,7 @@ Bar foo</pre></td>
 <td class="input"><pre>{{ucf&#305;rst:blah}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;a href="/index.php?title=%C5%9Eablon:Ucf%C4%B1rst:blah&amp;amp;action=edit&amp;amp;redlink=1" class="new" title="&#350;ablon:Ucf&#305;rst:blah (sayfa mevcut de&#287;il)"&gt;&#350;ablon:Ucf&#305;rst:blah&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ucf&amp;#305;rst" title="ParserFunc:ucf&amp;#305;rst"&gt;ParserFunc:ucf&amp;#305;rst&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ucf&amp;#305;rst:blah" title="Template:ucf&amp;#305;rst:blah"&gt;Template:ucf&amp;#305;rst:blah&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -14844,7 +14849,7 @@ Bar foo</pre></td>
 <td class="input"><pre>{{ucf&#305;rst:blah}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&lt;a href="/index.php?title=Template:Ucf%C4%B1rst:blah&amp;amp;action=edit&amp;amp;redlink=1" class="new" title="Template:Ucf&#305;rst:blah (page does not exist)"&gt;Template:Ucf&#305;rst:blah&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:ucf&amp;#305;rst" title="ParserFunc:ucf&amp;#305;rst"&gt;ParserFunc:ucf&amp;#305;rst&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:ucf&amp;#305;rst:blah" title="Template:ucf&amp;#305;rst:blah"&gt;Template:ucf&amp;#305;rst:blah&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15046,7 +15051,7 @@ QED&#8990;
 <td class="input"><pre>{{int:Bug32057}}</pre></td>
 <td class="expect"><pre>&lt;h2&gt;&lt;span class="mw-headline" id="Headline_text"&gt;Headline text&lt;/span&gt;&lt;span class="mw-editsection"&gt;&lt;span class="mw-editsection-bracket"&gt;[&lt;/span&gt;&lt;a href="/index.php?title=Main_Page&amp;amp;action=edit&amp;amp;section=1" title="Edit section: Headline text"&gt;edit&lt;/a&gt;&lt;span class="mw-editsection-bracket"&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/h2&gt;&#8990;
 </pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:int" title="ParserFunc:int"&gt;ParserFunc:int&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:int:Bug32057" title="Template:int:Bug32057"&gt;Template:int:Bug32057&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15060,19 +15065,19 @@ QED&#8990;
 xy&#8990;
 xy&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:urlencode" title="ParserFunc:urlencode"&gt;ParserFunc:urlencode&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:urlencode" title="ParserFunc:urlencode"&gt;ParserFunc:urlencode&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:urlencode" title="ParserFunc:urlencode"&gt;ParserFunc:urlencode&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:urlencode:xy" title="Template:urlencode:xy"&gt;Template:urlencode:xy&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:urlencode:xy" title="Template:urlencode:xy"&gt;Template:urlencode:xy&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:urlencode:xy" title="Template:urlencode:xy"&gt;Template:urlencode:xy&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
-<tr class="fail">
+<tr class="pass from_fail to_pass">
 <th class="index">1023</th>
-<td class="status">fail</td>
+<td class="status">pass</td>
 <td class="description">Strip marker in lc</td>
 <td class="input"><pre>{{lc:x&lt;nowiki/&gt;y}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;xy&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:lc" title="ParserFunc:lc"&gt;ParserFunc:lc&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;xy&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15082,7 +15087,7 @@ xy&#8990;
 <td class="input"><pre>{{uc:x&lt;nowiki/&gt;y}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;XY&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:uc" title="ParserFunc:uc"&gt;ParserFunc:uc&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;X&amp;lt;NOWIKI/&amp;gt;Y&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15094,8 +15099,8 @@ xy&#8990;
 <td class="expect"><pre>&lt;p&gt;12&#8990;
 12&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:formatnum" title="ParserFunc:formatnum"&gt;ParserFunc:formatnum&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:formatnum" title="ParserFunc:formatnum"&gt;ParserFunc:formatnum&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:formatnum:12" title="Template:formatnum:12"&gt;Template:formatnum:12&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:formatnum:12" title="Template:formatnum:12"&gt;Template:formatnum:12&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15108,8 +15113,8 @@ xy&#8990;
 <td class="expect"><pre>&lt;p&gt;123&#160;456,78&#8990;
 123456.78&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:formatnum" title="ParserFunc:formatnum"&gt;ParserFunc:formatnum&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:formatnum" title="ParserFunc:formatnum"&gt;ParserFunc:formatnum&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:formatnum:123456.78" title="Template:formatnum:123456.78"&gt;Template:formatnum:123456.78&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:formatnum:123456.78" title="Template:formatnum:123456.78"&gt;Template:formatnum:123456.78&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15120,7 +15125,7 @@ xy&#8990;
 <td class="input"><pre>{{grammar:elative|foo&lt;nowiki/&gt;bar}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;foobarista&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:grammar" title="ParserFunc:grammar"&gt;ParserFunc:grammar&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:grammar:elative" title="Template:grammar:elative"&gt;Template:grammar:elative&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15130,7 +15135,7 @@ xy&#8990;
 <td class="input"><pre>{{padleft:|2|x&lt;nowiki/&gt;y}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;xy&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:padleft" title="ParserFunc:padleft"&gt;ParserFunc:padleft&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:padleft:" title="Template:padleft:"&gt;Template:padleft:&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15140,7 +15145,7 @@ xy&#8990;
 <td class="input"><pre>{{padright:|2|x&lt;nowiki/&gt;y}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;xy&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:padright" title="ParserFunc:padright"&gt;ParserFunc:padright&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:padright:" title="Template:padright:"&gt;Template:padright:&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15150,7 +15155,7 @@ xy&#8990;
 <td class="input"><pre>{{anchorencode:x&lt;nowiki/&gt;y}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;xy&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:anchorencode" title="ParserFunc:anchorencode"&gt;ParserFunc:anchorencode&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:anchorencode:xy" title="Template:anchorencode:xy"&gt;Template:anchorencode:xy&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15284,7 +15289,7 @@ File:foobar.jpg|link=&amp;lt;&#8990;
 <td class="input"><pre>{{#language:ar}}</pre></td>
 <td class="expect"><pre>&lt;p&gt;&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:#language" title="ParserFunc:#language"&gt;ParserFunc:#language&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:#language:ar" title="Template:#language:ar"&gt;Template:#language:ar&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15296,8 +15301,8 @@ File:foobar.jpg|link=&amp;lt;&#8990;
 <td class="expect"><pre>&lt;p&gt;abc&#8990;
 abc&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:padleft" title="ParserFunc:padleft"&gt;ParserFunc:padleft&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:padright" title="ParserFunc:padright"&gt;ParserFunc:padright&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:padleft:" title="Template:padleft:"&gt;Template:padleft:&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:padright:" title="Template:padright:"&gt;Template:padright:&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -15311,9 +15316,9 @@ abc&#8990;
 Special:Badtitle&#8990;
 Special:Foobar&#8990;
 &lt;/p&gt;</pre></td>
-<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/ParserFunc:#special" title="ParserFunc:#special"&gt;ParserFunc:#special&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:#special" title="ParserFunc:#special"&gt;ParserFunc:#special&lt;/a&gt;&#8990;
-&lt;a href="/wiki/ParserFunc:#special" title="ParserFunc:#special"&gt;ParserFunc:#special&lt;/a&gt;&#8990;
+<td class="output"><pre>&lt;p&gt;&lt;a href="/wiki/Template:#special:RandomPage" title="Template:#special:RandomPage"&gt;Template:#special:RandomPage&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:#special:BaDtItLe" title="Template:#special:BaDtItLe"&gt;Template:#special:BaDtItLe&lt;/a&gt;&#8990;
+&lt;a href="/wiki/Template:#special:Foobar" title="Template:#special:Foobar"&gt;Template:#special:Foobar&lt;/a&gt;&#8990;
 &lt;/p&gt;</pre></td>
 </tr>
 <tr class="fail">
@@ -17250,6 +17255,16 @@ this&#8990;
 &lt;/li&gt;&lt;li&gt;this&#8990;
 &lt;/li&gt;&lt;/ul&gt;&#8990;
 </pre></td>
+</tr>
+<tr class="pass">
+<th class="index">5</th>
+<td class="status">pass</td>
+<td class="description">template argument name must be trimmed</td>
+<td class="input"><pre>{{wsarg|foo=bar}}</pre></td>
+<td class="expect"><pre>&lt;p&gt;bar&#8990;
+&lt;/p&gt;</pre></td>
+<td class="output"><pre>&lt;p&gt;bar&#8990;
+&lt;/p&gt;</pre></td>
 </tr>
 </tbody>
 </table></div>
