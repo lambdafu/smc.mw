@@ -11,6 +11,21 @@ from bisect import bisect_left
 from contextlib import contextmanager
 
 from lxml import etree
+try:
+    lxml_no_iter_list = False
+    list(etree.ElementDepthFirstIterator(etree.Element("foo"), ["foo"]))
+except TypeError:
+    lxml_no_iter_list = True
+def iter_from_list(root, tags):
+    if lxml_no_iter_list is False:
+        return root.iter(tags)
+
+    def iter_():
+        for el in root.iter():
+            if not tags or el.tag in tags:
+                yield el
+    return iter_()
+
 import sys
 
 from grako.exceptions import FailedSemantics
@@ -149,7 +164,8 @@ def postprocess_references(root):
 def postprocess_toc(root):
     # FIRST make identifiers unique.
     ids = {}
-    headings = root.iter(["h1", "h2", "h3", "h4", "h5", "h6"])
+    # headings = root.iter(["h1", "h2", "h3", "h4", "h5", "h6"])
+    headings = iter_from_list(root, ["h1", "h2", "h3", "h4", "h5", "h6"])
     for el in headings:
         span = el[0]
         ident = span.get("id")
@@ -199,10 +215,6 @@ def postprocess_toc(root):
 
     head = etree.SubElement(toctitle, "h2")
     head.text = "Inhaltsverzeichnis"
-
-    header_re = re.compile(r'^h[123456]$')
-    # FIXME: Use iter(["h1", ... ])
-    headings = [elem for elem in root.iter() if header_re.match(elem.tag)]
 
     # Running count of sections (including skipped levels).
     ident_nr = 0

@@ -21,6 +21,20 @@ from StringIO import StringIO
 import datetime
 
 from lxml import etree, html
+try:
+    lxml_no_iter_list = False
+    list(etree.ElementDepthFirstIterator(etree.Element("foo"), ["foo"]))
+except TypeError:
+    lxml_no_iter_list = True
+def iter_from_list(root, tags):
+    if lxml_no_iter_list is False:
+        return root.iter(tags)
+
+    def iter_():
+        for el in root.iter():
+            if not tags or el.tag in tags:
+                yield el
+    return iter_()
 
 from smc import mw
 
@@ -80,7 +94,7 @@ def profiled(fn):
 def clean_expect(expect):
     body = html.fragment_fromstring(expect, create_parent=True)
     # Clear edit link from header sections for now.
-    for el in body.iter(["h1", "h2", "h3", "h4", "h5", "h6"]):
+    for el in iter_from_list(body, ["h1", "h2", "h3", "h4", "h5", "h6"]):
         for subel in el.iterdescendants("a"):
             subel.set("href", "")
 
