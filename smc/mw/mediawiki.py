@@ -15,9 +15,10 @@ class MediaWiki(object):
 
     Parses the provided MediaWiki-style wikitext and renders it to HTML."""
 
-    def __init__(self, wikitext):
+    def __init__(self, wikitext, title=None):
         """Construct a new MediaWiki object for the given wikitext."""
 
+        wikitext = Preprocessor().expand(title, wikitext)
         parser = Parser(parseinfo=False,  whitespace='', nameguard=False)
         ast = parser.parse(wikitext, "document", filename="wikitext",
                            semantics=SemanticsTracer(Semantics(parser), trace=False),
@@ -34,6 +35,5 @@ class MediaWiki(object):
 
 def mediawiki(wikitext, title=None):
     """Render the wikitext and return output as HTML string."""
-    wikitext = Preprocessor().expand(title, wikitext)
-    mw = MediaWiki(wikitext)
+    mw = MediaWiki(wikitext, title=title)
     return mw.as_string()
