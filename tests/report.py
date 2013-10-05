@@ -277,8 +277,11 @@ def html_report(tests, old_tests=None):
                 
     for test_group in tests:
         if old_tests:
-            old_group = old_tests[test_group.filename]
-            group_cmp = TestGroupCmp(old_group, test_group)
+            if test_group.filename in old_tests:
+                old_group = old_tests[test_group.filename]
+                group_cmp = TestGroupCmp(old_group, test_group)
+            else:
+                group_cmp = None
 
         h = etree.SubElement(body, "h2")
         h.text = test_group.filename
@@ -319,7 +322,7 @@ def html_report(tests, old_tests=None):
         for test in test_group.results:
             row = etree.SubElement(tbody, "tr")
             row_class = test["status"]
-            if old_tests:
+            if group_cmp is not None:
                 old_state = group_cmp.old(test)
                 new_state = group_cmp.new(test)
                 if old_state != new_state:
