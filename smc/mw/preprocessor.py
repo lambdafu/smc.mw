@@ -18,6 +18,55 @@ from . settings import Settings
 
 AUTO_NEWLINE_RE = re.compile(r"(?:{\||[:;#*])")
 
+class ParserFuncArguments(object):
+    def __init__(self, parent, first, args):
+        self.parent = parent
+        self.first = first
+        self.args = args
+
+    def get_count(self):
+        return 1 + len(self.args)
+
+    def get(self, index):
+        # It seems that caching has no benefit, as ParserFuncs are
+        # written in such a way to only evaluate each argument at most
+        # once.
+        name = self.get_name(index)
+        result = self.get_value(index)
+        if name is not None:
+            result = name + "=" + result
+        result = result.strip()
+        return result
+
+    def _get_name(self, index):
+        if index == 0:
+            return None
+        el = self.args[index - 1]
+        name_count = el.xpath("count(name)")
+        if name_count <= 0:
+            return None
+        name_el = el.iterchildren("name").next()
+        name = self.parent.expand(name_el)
+        return name
+
+    def get_name(self, index):
+        name = self._get_name(index)
+        if name is not None:
+            name = name.strip()
+        return name
+
+    def _get_value(self, index):
+        if index == 0:
+            return self.first
+        el = self.args[index - 1]
+        value_el = el.iterchildren("value").next()
+        value = self.parent.expand(value_el)
+        return value
+
+    def get_value(self, index):
+        return self._get_value(index).strip()
+
+
 class mw_preSemantics(object):
     def _collect_elements(self, container, elements):
         if elements is None:
@@ -196,19 +245,8 @@ class PreprocessorFrame(object):
 
         colon = name.find(":")
         if colon >= 0:
-            # QUIRK: Named arguments are not parsed for parser functions.
-            args = [name[colon + 1:].strip()]
-            arg_els = el.iterchildren("tplarg")
-            for arg_el in arg_els:
-                arg_value_el = arg_el.iterchildren("value").next()
-                arg_value = self.expand(arg_value_el)
-                arg_name_count = arg_el.xpath("count(name)")
-                if arg_name_count > 0:
-                    arg_name_el = arg_el.iterchildren("name").next()
-                    arg_name = self.expand(arg_name_el)
-                    args.append(arg_name + "=" + arg_value)
-                else:
-                    args.append(arg_value)
+            # QUIRK: We have to keep the order of named and unnamed arguments (i.e. for #switch).
+            args = ParserFuncArguments(self, name[colon + 1:].strip(), list(el.iterchildren("tplarg")))
             parser_func = self.context.expand_parser_func(name[:colon], args)
             if parser_func is not None:
                 return parser_func
@@ -440,32 +478,74 @@ class Preprocessor(object):
             return None
 
     def expand_parser_func(self, name, args):
-        args = map(lambda arg: arg.strip(), args)
-        args_cnt = len(args)
+        first_arg = args.get_value(0)
+        args_cnt = args.get_count()
         if name == "lc":
-            return args[0].lower()
+            return first_arg.lower()
         elif name == "lcfirst":
-            return args[0][:1].lower() + args[0][1:]
+            return first_arg[:1].lower() + first_arg[1:]
         elif name == "uc":
-            return args[0].upper()
+            return first_arg.upper()
         elif name == "ucfirst":
-            return args[0][:1].upper() + args[0][1:]            
+            return first_arg[:1].upper() + first_arg[1:]            
         elif name == "#ifeq":
+            def canonicalize_arg(arg):
+                try:
+                    nr = int(arg)
+                    return str(nr)
+                except ValueError:
+                    pass
+                return arg
+
             if args_cnt <= 2:
                 return ""
-            if args[0] == args[1]:
-                return args[2]
+            val_1 = canonicalize_arg(first_arg)
+            val_2 = canonicalize_arg(args.get(1))
+            if val_1 == val_2:
+                return args.get(2)
             if args_cnt > 3:
-                return args[3]
+                return args.get(3)
             return ""
         elif name == "#if":
             if args_cnt <= 1:
                 return ""
-            if len(args[0]) > 0:
-                return args[1]
+            if len(first_arg) > 0:
+                return args.get(1)
             if args_cnt > 2:
-                return args[2]
+                return args.get(2)
             return ""
+        elif name == "#switch":
+            if args_cnt < 2:
+                return ""
+            # True if we are in a match and wait for the next key=value.
+            pending_match = False
+            # True if we have seen #default and wait for the next key=value.
+            pending_default = False
+            # The default value seen.
+            # QUIRK: For #default, last match wins (unless first_arg is "#default").
+            default = None
+            for arg in xrange(1, args_cnt):
+                name = args.get_name(arg)
+                value = args.get_value(arg)
+                if name is not None:
+                    if pending_match or name == first_arg:
+                        return value
+                    elif pending_default or name == "#default":
+                        default = value
+                        pending_default = False
+                    pending_match = False
+                else:
+                    if value == first_arg:
+                        pending_match = True
+                    elif value == "#default":
+                        pending_default = True
+                name = args.get_name(args_cnt - 1)
+            if name is None:
+                return args.get_value(args_cnt - 1)
+            elif default is not None:
+                return default
+            else:
+                return ""
         else:
             return None
 
