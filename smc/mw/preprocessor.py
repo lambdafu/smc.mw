@@ -451,21 +451,23 @@ class Preprocessor(object):
         elif name == "ucfirst":
             return args[0][:1].upper() + args[0][1:]            
         elif name == "#ifeq":
-            if len(args_cnt <= 2):
+            if args_cnt <= 2:
                 return ""
             if args[0] == args[1]:
                 return args[2]
-            if args_cnt >= 3:
+            if args_cnt > 3:
                 return args[3]
             return ""
         elif name == "#if":
-            if len(args_cnt <= 1):
+            if args_cnt <= 1:
                 return ""
             if len(args[0]) > 0:
                 return args[1]
-            if args_cnt >= 2:
+            if args_cnt > 2:
                 return args[2]
             return ""
-            
+        else:
+            return None
+
     def get_template(self, name):
         return None
