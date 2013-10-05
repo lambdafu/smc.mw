@@ -65,3 +65,14 @@ template argument name must be trimmed
 <p>bar
 </p>
 !! end
+
+!! test
+whitespace in tr and table elements
+!! input
+  <table>
+  <tr><th>x</th>
+  </tr>
+  </table>
+!! result
+<table><tr><th>x</th></tr></table>
+!! end

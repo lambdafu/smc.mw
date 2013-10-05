@@ -454,12 +454,12 @@ html_p_element = ?/(?i)(?:p)(?!\w)/? ;
 html_p_inline = push_wspre_off { !block_anywhere inline_impl_one } * pop_wspre ;
 
 (* html table is special, as it may contain other html table elements.  *)
-html_table = blank "<" &html_table_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_table_content [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
+html_table = blank "<" &html_table_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_table_content multiline_blank [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
 html_table_element = ?/(?i)(?:table)(?!\w)/? ;
 html_table_content = { html_table_content_item } * ;
 html_table_content_item = multiline_blank @html_table_tr ;
 
-html_table_tr = "<" &html_table_tr_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_table_tr_content [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
+html_table_tr = "<" &html_table_tr_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_table_tr_content multiline_blank [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
 html_table_tr_element = ?/(?i)(?:tr)(?!\w)/? ;
 html_table_tr_content = { html_table_tr_content_item } * ;
 html_table_tr_content_item = multiline_blank @( html_table_cell ) ;

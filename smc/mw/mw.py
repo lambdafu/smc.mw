@@ -12,7 +12,7 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 from grako.parsing import * # @UnusedWildImport
 from grako.exceptions import * # @UnusedWildImport
 
-__version__ = '13.249.00.34.48'
+__version__ = '13.276.03.58.54'
 
 class mwParser(Parser):
     def __init__(self, whitespace='', nameguard=False, **kwargs):
@@ -20,133 +20,133 @@ class mwParser(Parser):
             nameguard=nameguard, **kwargs)
 
     @rule_def
-    def blank(self):
+    def _blank_(self):
         with self._optional():
             self._pattern(r'[ \t]+')
 
     @rule_def
-    def multiline_blank(self):
+    def _multiline_blank_(self):
         def block0():
             with self._choice():
                 with self._option():
-                    self.empty_line()
-                    self.check_bol_skip()
+                    self._empty_line_()
+                    self._check_bol_skip_()
                 with self._option():
                     self._pattern(r'[ \t]+')
                 self._error('expecting one of: [ \t]+')
         self._closure(block0)
 
     @rule_def
-    def document(self):
+    def _document_(self):
         def block1():
             with self._ifnot():
-                self.empty_tail()
-            self.document_block()
+                self._empty_tail_()
+            self._document_block_()
         self._closure(block1)
         self.ast['blocks'] = self.last_node
         with self._optional():
-            self.empty_tail()
+            self._empty_tail_()
         self._check_eof()
 
     @rule_def
-    def empty_tail(self):
+    def _empty_tail_(self):
         def block0():
-            self.empty_line()
+            self._empty_line_()
         self._closure(block0)
-        self.blank()
+        self._blank_()
         self._check_eof()
 
     @rule_def
-    def document_block(self):
+    def _document_block_(self):
         with self._optional():
-            self.empty_line()
-        self.block()
+            self._empty_line_()
+        self._block_()
         self.ast['@'] = self.last_node
 
     @rule_def
-    def empty_line(self):
+    def _empty_line_(self):
         self._pattern(r'[ \t]*\n')
 
     @rule_def
-    def block(self):
+    def _block_(self):
         with self._group():
             with self._choice():
                 with self._option():
-                    self.block_not_par()
+                    self._block_not_par_()
                 with self._option():
-                    self.paragraph()
+                    self._paragraph_()
                 self._error('no available options')
         self._cut()
 
     @rule_def
-    def block_not_par(self):
+    def _block_not_par_(self):
         with self._choice():
             with self._option():
-                self.block_at_bol()
+                self._block_at_bol_()
             with self._option():
-                self.block_anywhere()
+                self._block_anywhere_()
             self._error('no available options')
 
     @rule_def
-    def block_at_bol(self):
+    def _block_at_bol_(self):
         with self._if():
             self._pattern(r'^')
         with self._group():
             with self._choice():
                 with self._option():
-                    self.heading_block()
+                    self._heading_block_()
                 with self._option():
-                    self.horizontal_rule_block()
+                    self._horizontal_rule_block_()
                 with self._option():
-                    self.table_block()
+                    self._table_block_()
                 with self._option():
-                    self.list_block()
+                    self._list_block_()
                 with self._option():
-                    self.toc_block()
+                    self._toc_block_()
                 with self._option():
-                    self.wspre_block()
+                    self._wspre_block_()
                 self._error('no available options')
 
     @rule_def
-    def block_anywhere(self):
+    def _block_anywhere_(self):
         with self._choice():
             with self._option():
-                self.html_block()
+                self._html_block_()
             with self._option():
-                self.html_block_no_wspre()
+                self._html_block_no_wspre_()
             with self._option():
-                self.html_p()
+                self._html_p_()
             with self._option():
-                self.pre()
+                self._pre_()
             with self._option():
-                self.html_heading()
+                self._html_heading_()
             with self._option():
-                self.html_table()
+                self._html_table_()
             with self._option():
-                self.html_list()
+                self._html_list_()
             with self._option():
-                self.html_dl()
+                self._html_dl_()
             self._error('no available options')
 
     @rule_def
-    def heading_block(self):
+    def _heading_block_(self):
         with self._group():
             with self._choice():
                 with self._option():
-                    self.h6()
+                    self._h6_()
                 with self._option():
-                    self.h5()
+                    self._h5_()
                 with self._option():
-                    self.h4()
+                    self._h4_()
                 with self._option():
-                    self.h3()
+                    self._h3_()
                 with self._option():
-                    self.h2()
+                    self._h2_()
                 with self._option():
-                    self.h1()
+                    self._h1_()
                 self._error('no available options')
         self.ast['@'] = self.last_node
-        self.blank()
+        self._blank_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -155,287 +155,287 @@ class mwParser(Parser):
                     self._check_eof()
                 self._error('expecting one of: \n')
         def block2():
-            self.empty_line()
+            self._empty_line_()
         self._closure(block2)
 
     @rule_def
-    def h6(self):
+    def _h6_(self):
         self._token('======')
-        self.push_no_h6()
-        self.heading_inline()
+        self._push_no_h6_()
+        self._heading_inline_()
         self.ast['@'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         self._token('======')
 
     @rule_def
-    def h5(self):
+    def _h5_(self):
         self._token('=====')
-        self.push_no_h5()
-        self.heading_inline()
+        self._push_no_h5_()
+        self._heading_inline_()
         self.ast['@'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         self._token('=====')
 
     @rule_def
-    def h4(self):
+    def _h4_(self):
         self._token('====')
-        self.push_no_h4()
-        self.heading_inline()
+        self._push_no_h4_()
+        self._heading_inline_()
         self.ast['@'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         self._token('====')
 
     @rule_def
-    def h3(self):
+    def _h3_(self):
         self._token('===')
-        self.push_no_h3()
-        self.heading_inline()
+        self._push_no_h3_()
+        self._heading_inline_()
         self.ast['@'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         self._token('===')
 
     @rule_def
-    def h2(self):
+    def _h2_(self):
         self._token('==')
-        self.push_no_h2()
-        self.heading_inline()
+        self._push_no_h2_()
+        self._heading_inline_()
         self.ast['@'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         self._token('==')
 
     @rule_def
-    def h1(self):
+    def _h1_(self):
         self._token('=')
-        self.push_no_h1()
-        self.heading_inline()
+        self._push_no_h1_()
+        self._heading_inline_()
         self.ast['@'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         self._token('=')
 
     @rule_def
-    def heading_inline(self):
-        self.push_no_nl()
-        self.heading_content()
-        self.pop_no()
+    def _heading_inline_(self):
+        self._push_no_nl_()
+        self._heading_content_()
+        self._pop_no_()
 
     @rule_def
-    def heading_content(self):
+    def _heading_content_(self):
         def block0():
-            self.check_ifnots()
+            self._check_ifnots_()
             self._pattern(r'(.|\n)')
         self._closure(block0)
 
     @rule_def
-    def push_no_h6(self):
+    def _push_no_h6_(self):
         pass
 
     @rule_def
-    def push_no_h5(self):
+    def _push_no_h5_(self):
         pass
 
     @rule_def
-    def push_no_h4(self):
+    def _push_no_h4_(self):
         pass
 
     @rule_def
-    def push_no_h3(self):
+    def _push_no_h3_(self):
         pass
 
     @rule_def
-    def push_no_h2(self):
+    def _push_no_h2_(self):
         pass
 
     @rule_def
-    def push_no_h1(self):
+    def _push_no_h1_(self):
         pass
 
     @rule_def
-    def horizontal_rule_block(self):
+    def _horizontal_rule_block_(self):
         self._pattern(r'-{4,}')
-        self.blank()
+        self._blank_()
         with self._optional():
             self._pattern(r'\n')
 
     @rule_def
-    def list_block(self):
-        self.list_list()
+    def _list_block_(self):
+        self._list_list_()
         self.ast['@'] = self.last_node
         with self._group():
             with self._choice():
                 with self._option():
-                    self.list_newline()
+                    self._list_newline_()
                 with self._option():
                     self._check_eof()
                 self._error('no available options')
 
     @rule_def
-    def list_list(self):
+    def _list_list_(self):
         with self._choice():
             with self._option():
-                self.ul_block()
+                self._ul_block_()
             with self._option():
-                self.ol_block()
+                self._ol_block_()
             with self._option():
-                self.dl_block()
+                self._dl_block_()
             self._error('no available options')
 
     @rule_def
-    def list_newline(self):
+    def _list_newline_(self):
         self._pattern(r'\n')
-        self.check_bol_skip()
+        self._check_bol_skip_()
 
     @rule_def
-    def ul_block(self):
+    def _ul_block_(self):
         self._token('*')
-        self.push_bol_skip_ul()
-        self.list_li()
+        self._push_bol_skip_ul_()
+        self._list_li_()
         self.ast.add_list('li', self.last_node)
         def block1():
-            self.list_newline()
-            self.list_li()
+            self._list_newline_()
+            self._list_li_()
             self.ast['li'] = self.last_node
         self._closure(block1)
-        self.pop_bol_skip()
+        self._pop_bol_skip_()
 
     @rule_def
-    def ol_block(self):
+    def _ol_block_(self):
         self._token('#')
-        self.push_bol_skip_ol()
-        self.list_li()
+        self._push_bol_skip_ol_()
+        self._list_li_()
         self.ast.add_list('li', self.last_node)
         def block1():
-            self.list_newline()
-            self.list_li()
+            self._list_newline_()
+            self._list_li_()
             self.ast['li'] = self.last_node
         self._closure(block1)
-        self.pop_bol_skip()
+        self._pop_bol_skip_()
 
     @rule_def
-    def dl_block(self):
+    def _dl_block_(self):
         self._pattern(r'[;:]')
-        self.push_bol_skip_dl()
-        self.dt_or_dd()
+        self._push_bol_skip_dl_()
+        self._dt_or_dd_()
         self.ast.add_list('li', self.last_node)
         def block1():
-            self.list_newline()
-            self.dt_or_dd()
+            self._list_newline_()
+            self._dt_or_dd_()
             self.ast['li'] = self.last_node
         self._closure(block1)
-        self.pop_bol_skip()
+        self._pop_bol_skip_()
 
     @rule_def
-    def push_bol_skip_ul(self):
+    def _push_bol_skip_ul_(self):
         pass
 
     @rule_def
-    def push_bol_skip_ol(self):
+    def _push_bol_skip_ol_(self):
         pass
 
     @rule_def
-    def push_bol_skip_dl(self):
+    def _push_bol_skip_dl_(self):
         pass
 
     @rule_def
-    def dt_or_dd(self):
+    def _dt_or_dd_(self):
         with self._choice():
             with self._option():
-                self.dl_dt()
+                self._dl_dt_()
             with self._option():
-                self.dl_dd()
+                self._dl_dd_()
             self._error('no available options')
 
     @rule_def
-    def dl_dt(self):
+    def _dl_dt_(self):
         self._pattern(r'(?<=;)')
-        self.list_dt()
+        self._list_dt_()
         self.ast['@'] = self.last_node
 
     @rule_def
-    def dl_dd(self):
+    def _dl_dd_(self):
         self._pattern(r'(?<=:)')
-        self.list_li()
+        self._list_li_()
         self.ast['@'] = self.last_node
 
     @rule_def
-    def list_li(self):
+    def _list_li_(self):
         with self._group():
             with self._choice():
                 with self._option():
-                    self.list_list()
+                    self._list_list_()
                     self.ast.add_list('sublists', self.last_node)
                 with self._option():
-                    self.li_inline()
+                    self._li_inline_()
                     self.ast['inline'] = self.last_node
                 self._error('no available options')
         def block3():
-            self.list_sublist()
+            self._list_sublist_()
             self.ast.add_list('sublists', self.last_node)
         self._closure(block3)
 
     @rule_def
-    def li_inline(self):
-        self.push_no_nl()
-        self.inline()
+    def _li_inline_(self):
+        self._push_no_nl_()
+        self._inline_()
         self.ast['@'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
 
     @rule_def
-    def list_sublist(self):
-        self.list_newline()
-        self.list_list()
+    def _list_sublist_(self):
+        self._list_newline_()
+        self._list_list_()
         self.ast['@'] = self.last_node
 
     @rule_def
-    def list_dt(self):
+    def _list_dt_(self):
         with self._group():
             with self._choice():
                 with self._option():
-                    self.list_list()
+                    self._list_list_()
                     self.ast.add_list('sublists', self.last_node)
                     def block1():
-                        self.list_sublist()
+                        self._list_sublist_()
                         self.ast.add_list('sublists', self.last_node)
                     self._closure(block1)
                 with self._option():
-                    self.dt_inline_dd()
+                    self._dt_inline_dd_()
                     self.ast['inline_dd'] = self.last_node
                 with self._option():
-                    self.li_inline()
+                    self._li_inline_()
                     self.ast['inline'] = self.last_node
                     def block5():
-                        self.list_sublist()
+                        self._list_sublist_()
                         self.ast.add_list('sublists', self.last_node)
                     self._closure(block5)
                 self._error('no available options')
 
     @rule_def
-    def dt_inline_dd(self):
-        self.push_no_nl()
-        self.push_ifnot_dt()
-        self.inline()
+    def _dt_inline_dd_(self):
+        self._push_no_nl_()
+        self._push_ifnot_dt_()
+        self._inline_()
         self.ast['dt'] = self.last_node
-        self.pop_ifnot()
+        self._pop_ifnot_()
         self._token(':')
-        self.inline()
+        self._inline_()
         self.ast['dd'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
 
     @rule_def
-    def push_ifnot_dt(self):
+    def _push_ifnot_dt_(self):
         pass
 
     @rule_def
-    def wspre_block(self):
-        self.check_wspre()
+    def _wspre_block_(self):
+        self._check_wspre_()
         with self._if():
             self._pattern(r'^')
         self._token(' ')
         with self._ifnot():
-            self.empty_line()
-        self.push_bol_skip_wspre()
-        self.wspre_inline()
+            self._empty_line_()
+        self._push_bol_skip_wspre_()
+        self._wspre_inline_()
         self.ast['@'] = self.last_node
-        self.pop_bol_skip()
+        self._pop_bol_skip_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -445,99 +445,99 @@ class mwParser(Parser):
                 self._error('expecting one of: \n')
 
     @rule_def
-    def wspre_inline(self):
+    def _wspre_inline_(self):
         def block1():
             with self._ifnot():
-                self.block_anywhere()
-            self.wspre_inline_one()
+                self._block_anywhere_()
+            self._wspre_inline_one_()
         self._positive_closure(block1)
 
         self.ast['content'] = self.last_node
 
     @rule_def
-    def wspre_inline_one(self):
+    def _wspre_inline_one_(self):
         with self._choice():
             with self._option():
-                self.wspre_newline()
+                self._wspre_newline_()
             with self._option():
-                self.inline_impl_one_no_newline()
+                self._inline_impl_one_no_newline_()
             self._error('no available options')
 
     @rule_def
-    def wspre_newline(self):
-        self.empty_line()
+    def _wspre_newline_(self):
+        self._empty_line_()
         self.ast['@'] = self.last_node
-        self.check_bol_skip()
+        self._check_bol_skip_()
 
     @rule_def
-    def push_bol_skip_wspre(self):
+    def _push_bol_skip_wspre_(self):
         pass
 
     @rule_def
-    def push_wspre_off(self):
+    def _push_wspre_off_(self):
         pass
 
     @rule_def
-    def pop_wspre(self):
+    def _pop_wspre_(self):
         pass
 
     @rule_def
-    def set_wspre_on(self):
+    def _set_wspre_on_(self):
         pass
 
     @rule_def
-    def check_wspre(self):
+    def _check_wspre_(self):
         pass
 
     @rule_def
-    def check_ifnots(self):
-        self.check_ifnot()
-        self.check_no()
+    def _check_ifnots_(self):
+        self._check_ifnot_()
+        self._check_no_()
 
     @rule_def
-    def pop_ifnot(self):
+    def _pop_ifnot_(self):
         pass
 
     @rule_def
-    def check_ifnot(self):
+    def _check_ifnot_(self):
         pass
 
     @rule_def
-    def pop_no(self):
+    def _pop_no_(self):
         pass
 
     @rule_def
-    def check_no(self):
+    def _check_no_(self):
         pass
 
     @rule_def
-    def push_no_nl(self):
+    def _push_no_nl_(self):
         pass
 
     @rule_def
-    def pop_bol_skip(self):
+    def _pop_bol_skip_(self):
         pass
 
     @rule_def
-    def check_bol_skip(self):
+    def _check_bol_skip_(self):
         pass
 
     @rule_def
-    def toc_block(self):
+    def _toc_block_(self):
         with self._choice():
             with self._option():
-                self.toc()
+                self._toc_()
             with self._option():
-                self.notoc()
+                self._notoc_()
             with self._option():
-                self.forcetoc()
+                self._forcetoc_()
             self._error('no available options')
 
     @rule_def
-    def toc(self):
-        self.blank()
+    def _toc_(self):
+        self._blank_()
         self._token('__TOC__')
-        self.blank()
+        self._blank_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -547,10 +547,10 @@ class mwParser(Parser):
                 self._error('expecting one of: \n')
 
     @rule_def
-    def notoc(self):
-        self.blank()
+    def _notoc_(self):
+        self._blank_()
         self._token('__NOTOC__')
-        self.blank()
+        self._blank_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -560,10 +560,10 @@ class mwParser(Parser):
                 self._error('expecting one of: \n')
 
     @rule_def
-    def forcetoc(self):
-        self.blank()
+    def _forcetoc_(self):
+        self._blank_()
         self._token('__FORCETOC__')
-        self.blank()
+        self._blank_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -573,32 +573,32 @@ class mwParser(Parser):
                 self._error('expecting one of: \n')
 
     @rule_def
-    def table_attribute_junk(self):
+    def _table_attribute_junk_(self):
         def block0():
             with self._ifnot():
-                self.html_attribute()
+                self._html_attribute_()
             self._pattern(r'[^ \t\n]*')
             self._pattern(r'[ \t]+')
         self._closure(block0)
 
     @rule_def
-    def table_attribute_one(self):
-        self.html_attribute()
+    def _table_attribute_one_(self):
+        self._html_attribute_()
         self.ast['@'] = self.last_node
         with self._optional():
-            self.table_attribute_junk()
+            self._table_attribute_junk_()
 
     @rule_def
-    def table_attributes(self):
+    def _table_attributes_(self):
         with self._optional():
-            self.table_attribute_junk()
+            self._table_attribute_junk_()
         def block0():
-            self.table_attribute_one()
+            self._table_attribute_one_()
         self._closure(block0)
         self.ast['@'] = self.last_node
 
     @rule_def
-    def table_cell_attribute_junk(self):
+    def _table_cell_attribute_junk_(self):
         def block0():
             with self._ifnot():
                 with self._group():
@@ -606,30 +606,30 @@ class mwParser(Parser):
                         with self._option():
                             self._token('|')
                         with self._option():
-                            self.html_attribute()
+                            self._html_attribute_()
                         self._error('expecting one of: |')
             self._pattern(r'[^| \t\n]*')
             self._pattern(r'[ \t]+')
         self._closure(block0)
 
     @rule_def
-    def table_cell_attribute_one(self):
-        self.html_attribute()
+    def _table_cell_attribute_one_(self):
+        self._html_attribute_()
         self.ast['@'] = self.last_node
         with self._optional():
-            self.table_cell_attribute_junk()
+            self._table_cell_attribute_junk_()
 
     @rule_def
-    def table_cell_attributes(self):
+    def _table_cell_attributes_(self):
         with self._optional():
-            self.table_cell_attribute_junk()
+            self._table_cell_attribute_junk_()
         def block0():
-            self.table_cell_attribute_one()
+            self._table_cell_attribute_one_()
         self._closure(block0)
         self.ast['@'] = self.last_node
 
     @rule_def
-    def table_header_attribute_junk(self):
+    def _table_header_attribute_junk_(self):
         def block0():
             with self._ifnot():
                 with self._group():
@@ -641,49 +641,49 @@ class mwParser(Parser):
                         with self._option():
                             self._token('||')
                         with self._option():
-                            self.html_attribute()
+                            self._html_attribute_()
                         self._error('expecting one of: || | !!')
             self._pattern(r'(?:[^|! \t\n]+|!(?!!))*')
             self._pattern(r'[ \t]+')
         self._closure(block0)
 
     @rule_def
-    def table_header_attribute_one(self):
-        self.html_attribute()
+    def _table_header_attribute_one_(self):
+        self._html_attribute_()
         self.ast['@'] = self.last_node
         with self._optional():
-            self.table_header_attribute_junk()
+            self._table_header_attribute_junk_()
 
     @rule_def
-    def table_header_attributes(self):
+    def _table_header_attributes_(self):
         with self._optional():
-            self.table_header_attribute_junk()
+            self._table_header_attribute_junk_()
         def block0():
-            self.table_header_attribute_one()
+            self._table_header_attribute_one_()
         self._closure(block0)
         self.ast['@'] = self.last_node
 
     @rule_def
-    def table_block(self):
-        self.blank()
+    def _table_block_(self):
+        self._blank_()
         self._pattern(r':*')
         self.ast['indent'] = self.last_node
         self._token('{|')
-        self.table_attributes()
+        self._table_attributes_()
         self.ast['attribs'] = self.last_node
         with self._optional():
             def block2():
-                self.empty_line()
+                self._empty_line_()
             self._positive_closure(block2)
 
             with self._optional():
-                self.table_caption()
+                self._table_caption_()
                 self.ast['caption'] = self.last_node
-            self.table_rows()
+            self._table_rows_()
             self.ast['rows'] = self.last_node
-        self.blank()
+        self._blank_()
         self._token('|}')
-        self.blank()
+        self._blank_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -693,83 +693,83 @@ class mwParser(Parser):
                 self._error('expecting one of: \n')
 
     @rule_def
-    def table_caption(self):
-        self.blank()
+    def _table_caption_(self):
+        self._blank_()
         self._token('|+')
         with self._optional():
-            self.table_cell_attributes()
+            self._table_cell_attributes_()
             self.ast['attribs'] = self.last_node
-            self.blank()
+            self._blank_()
             self._token('|')
-        self.table_mode_document()
+        self._table_mode_document_()
         self.ast['content'] = self.last_node
 
     @rule_def
-    def table_rows(self):
+    def _table_rows_(self):
         with self._optional():
-            self.table_row_first()
+            self._table_row_first_()
             self.ast['first'] = self.last_node
         def block2():
-            self.table_row()
+            self._table_row_()
         self._closure(block2)
         self.ast['rest'] = self.last_node
 
     @rule_def
-    def table_row_first(self):
+    def _table_row_first_(self):
         def block1():
             with self._choice():
                 with self._option():
-                    self.table_data()
+                    self._table_data_()
                 with self._option():
-                    self.table_header()
+                    self._table_header_()
                 self._error('no available options')
         self._positive_closure(block1)
 
         self.ast['content'] = self.last_node
 
     @rule_def
-    def table_row(self):
-        self.blank()
+    def _table_row_(self):
+        self._blank_()
         self._pattern(r'\|-+')
-        self.table_attributes()
+        self._table_attributes_()
         self.ast['attribs'] = self.last_node
-        self.blank()
+        self._blank_()
         self._pattern(r'\n+')
         def block2():
             with self._choice():
                 with self._option():
-                    self.table_data()
+                    self._table_data_()
                 with self._option():
-                    self.table_header()
+                    self._table_header_()
                 self._error('no available options')
         self._closure(block2)
         self.ast['content'] = self.last_node
 
     @rule_def
-    def table_header(self):
-        self.blank()
+    def _table_header_(self):
+        self._blank_()
         self._token('!')
-        self.push_no_nl()
+        self._push_no_nl_()
         def block1():
-            self.table_header_cell_inline()
+            self._table_header_cell_inline_()
         self._closure(block1)
         self.ast['inline'] = self.last_node
-        self.pop_no()
-        self.table_header_cell()
+        self._pop_no_()
+        self._table_header_cell_()
         self.ast['final'] = self.last_node
 
     @rule_def
-    def table_header_cell_inline(self):
+    def _table_header_cell_inline_(self):
         with self._optional():
-            self.table_header_attributes()
+            self._table_header_attributes_()
             self.ast['attribs'] = self.last_node
-            self.blank()
+            self._blank_()
             self._token('|')
-        self.blank()
-        self.push_ifnot_table_header()
-        self.inline()
+        self._blank_()
+        self._push_ifnot_table_header_()
+        self._inline_()
         self.ast['text'] = self.last_node
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -779,23 +779,23 @@ class mwParser(Parser):
                 self._error('expecting one of: || !!')
 
     @rule_def
-    def table_header_cell(self):
+    def _table_header_cell_(self):
         with self._optional():
-            self.table_cell_attributes()
+            self._table_cell_attributes_()
             self.ast['attribs'] = self.last_node
-            self.blank()
+            self._blank_()
             self._token('|')
-        self.blank()
-        self.table_mode_document()
+        self._blank_()
+        self._table_mode_document_()
         self.ast['content'] = self.last_node
 
     @rule_def
-    def push_ifnot_table_header(self):
+    def _push_ifnot_table_header_(self):
         pass
 
     @rule_def
-    def table_data(self):
-        self.blank()
+    def _table_data_(self):
+        self._blank_()
         self._token('|')
         with self._ifnot():
             with self._group():
@@ -805,228 +805,228 @@ class mwParser(Parser):
                     with self._option():
                         self._token('-')
                     self._error('expecting one of: - }')
-        self.push_no_nl()
+        self._push_no_nl_()
         def block2():
-            self.table_data_cell_inline()
+            self._table_data_cell_inline_()
         self._closure(block2)
         self.ast['inline'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         with self._optional():
-            self.table_data_cell()
+            self._table_data_cell_()
             self.ast['final'] = self.last_node
 
     @rule_def
-    def table_data_cell_inline(self):
+    def _table_data_cell_inline_(self):
         with self._optional():
-            self.table_cell_attributes()
+            self._table_cell_attributes_()
             self.ast['attribs'] = self.last_node
-            self.blank()
+            self._blank_()
             self._token('|')
             with self._ifnot():
                 self._token('|')
-        self.blank()
-        self.push_ifnot_table_data()
-        self.inline()
+        self._blank_()
+        self._push_ifnot_table_data_()
+        self._inline_()
         self.ast['text'] = self.last_node
-        self.pop_ifnot()
+        self._pop_ifnot_()
         self._token('||')
 
     @rule_def
-    def table_data_cell(self):
+    def _table_data_cell_(self):
         with self._optional():
-            self.table_cell_attributes()
+            self._table_cell_attributes_()
             self.ast['attribs'] = self.last_node
-            self.blank()
+            self._blank_()
             self._token('|')
             with self._ifnot():
                 self._token('|')
-        self.blank()
+        self._blank_()
         with self._optional():
-            self.empty_line()
-        self.table_mode_document()
+            self._empty_line_()
+        self._table_mode_document_()
         self.ast['content'] = self.last_node
 
     @rule_def
-    def push_ifnot_table_data(self):
+    def _push_ifnot_table_data_(self):
         pass
 
     @rule_def
-    def table_mode_document(self):
-        self.push_no_tableline()
+    def _table_mode_document_(self):
+        self._push_no_tableline_()
         def block1():
             with self._ifnot():
                 with self._group():
                     with self._choice():
                         with self._option():
-                            self.blank()
+                            self._blank_()
                             self._token('|')
                         with self._option():
-                            self.blank()
+                            self._blank_()
                             self._token('!')
                         self._error('no available options')
-            self.document_block()
+            self._document_block_()
         self._closure(block1)
         self.ast['blocks'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
 
     @rule_def
-    def push_no_tableline(self):
+    def _push_no_tableline_(self):
         pass
 
     @rule_def
-    def non_special_chars(self):
+    def _non_special_chars_(self):
         self._pattern(r'((?!(http://|https://|ftp://|telnet://|irc://|ircs://|nntp://|worldwind://|mailto:|news:|svn://|git://|mms://))[^\n\[\]{\'"|=<&!:])+')
 
     @rule_def
-    def paragraph(self):
+    def _paragraph_(self):
         with self._choice():
             with self._option():
-                self.paragraph_only_br()
+                self._paragraph_only_br_()
             with self._option():
-                self.paragraph_impl()
+                self._paragraph_impl_()
             self._error('no available options')
 
     @rule_def
-    def paragraph_only_br(self):
-        self.empty_line()
+    def _paragraph_only_br_(self):
+        self._empty_line_()
         with self._group():
             with self._choice():
                 with self._option():
-                    self.empty_line()
+                    self._empty_line_()
                 with self._option():
                     with self._if():
-                        self.block_not_par()
+                        self._block_not_par_()
                 with self._option():
                     with self._ifnot():
-                        self.check_ifnots()
+                        self._check_ifnots_()
                 self._error('no available options')
 
     @rule_def
-    def paragraph_impl(self):
+    def _paragraph_impl_(self):
         with self._optional():
-            self.paragraph_br()
+            self._paragraph_br_()
             self.ast.add_list('content', self.last_node)
         def block1():
             with self._ifnot():
-                self.block_anywhere()
-            self.inline_impl_one()
+                self._block_anywhere_()
+            self._inline_impl_one_()
             self.ast.add_list('content', self.last_node)
         self._positive_closure(block1)
 
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
             self.ast.add_list('content', self.last_node)
 
     @rule_def
-    def paragraph_br(self):
-        self.empty_line()
+    def _paragraph_br_(self):
+        self._empty_line_()
 
     @rule_def
-    def inline(self):
+    def _inline_(self):
         def block0():
             with self._ifnot():
-                self.block_anywhere()
-            self.inline_impl_one()
+                self._block_anywhere_()
+            self._inline_impl_one_()
         self._closure(block0)
 
     @rule_def
-    def inline_impl_one(self):
-        self.check_ifnots()
+    def _inline_impl_one_(self):
+        self._check_ifnots_()
         with self._group():
             with self._choice():
                 with self._option():
-                    self.inline_newline()
+                    self._inline_newline_()
                 with self._option():
-                    self.inline_impl_one_no_newline()
+                    self._inline_impl_one_no_newline_()
                 self._error('no available options')
 
     @rule_def
-    def inline_impl_one_no_newline(self):
+    def _inline_impl_one_no_newline_(self):
         with self._choice():
             with self._option():
-                self.non_special_chars()
+                self._non_special_chars_()
             with self._option():
-                self.internal_link()
+                self._internal_link_()
             with self._option():
-                self.external_link()
+                self._external_link_()
             with self._option():
-                self.plain_link()
+                self._plain_link_()
             with self._option():
-                self.many_quotes()
+                self._many_quotes_()
             with self._option():
-                self.bold_and_italic()
+                self._bold_and_italic_()
             with self._option():
-                self.bold()
+                self._bold_()
             with self._option():
-                self.italic()
+                self._italic_()
             with self._option():
-                self.html_inline()
+                self._html_inline_()
             with self._option():
-                self.html_entity()
+                self._html_entity_()
             with self._option():
-                self.ref()
+                self._ref_()
             with self._option():
-                self.nowiki()
+                self._nowiki_()
             with self._option():
-                self.comment()
+                self._comment_()
             with self._option():
                 self._pattern(r'.')
             self._error('expecting one of: .')
 
     @rule_def
-    def inline_newline(self):
-        self.empty_line()
-        self.check_bol_skip()
+    def _inline_newline_(self):
+        self._empty_line_()
+        self._check_bol_skip_()
         with self._ifnot():
-            self.empty_line()
+            self._empty_line_()
         with self._ifnot():
-            self.block_not_par()
+            self._block_not_par_()
 
     @rule_def
-    def internal_link_trail(self):
+    def _internal_link_trail_(self):
         self._pattern(r"([a-zA-Z]|'(?!'))+")
 
     @rule_def
-    def internal_link(self):
+    def _internal_link_(self):
         self._token('[[')
-        self.blank()
-        self.push_ifnot_intlink_target()
-        self.inline()
+        self._blank_()
+        self._push_ifnot_intlink_target_()
+        self._inline_()
         self.ast['target'] = self.last_node
-        self.pop_ifnot()
-        self.blank()
+        self._pop_ifnot_()
+        self._blank_()
         with self._optional():
             self._token('|')
-            self.push_wspre_off()
-            self.push_ifnot_intlink()
-            self.multiline_blank()
-            self.inline()
+            self._push_wspre_off_()
+            self._push_ifnot_intlink_()
+            self._multiline_blank_()
+            self._inline_()
             self.ast['text'] = self.last_node
-            self.pop_ifnot()
-            self.pop_wspre()
+            self._pop_ifnot_()
+            self._pop_wspre_()
         self._token(']]')
         with self._optional():
-            self.internal_link_trail()
+            self._internal_link_trail_()
             self.ast['suffix'] = self.last_node
 
     @rule_def
-    def push_ifnot_intlink_target(self):
+    def _push_ifnot_intlink_target_(self):
         pass
 
     @rule_def
-    def push_ifnot_intlink(self):
+    def _push_ifnot_intlink_(self):
         pass
 
     @rule_def
-    def link_tail_chars_no_parens(self):
+    def _link_tail_chars_no_parens_(self):
         self._pattern(r'[,;\.:!\?\(\)]+')
 
     @rule_def
-    def link_tail_chars(self):
+    def _link_tail_chars_(self):
         self._pattern(r'[,;\.:!\?]+')
 
     @rule_def
-    def link_terminators(self):
+    def _link_terminators_(self):
         with self._choice():
             with self._option():
                 self._pattern(r'[\n\[\] \t]')
@@ -1035,29 +1035,29 @@ class mwParser(Parser):
             self._error('expecting one of: [\n\\[\\] \t]')
 
     @rule_def
-    def link_normal_chars_no_parens(self):
+    def _link_normal_chars_no_parens_(self):
         self._pattern(r'[^&,;\.:!\?\(\)\n\[\] \t]+')
 
     @rule_def
-    def link_normal_chars(self):
+    def _link_normal_chars_(self):
         self._pattern(r'[^&,;\.:!\?\n\[\] \t]+')
 
     @rule_def
-    def more_link_chars_no_parens(self):
+    def _more_link_chars_no_parens_(self):
         def block0():
             with self._choice():
                 with self._option():
-                    self.link_normal_chars_no_parens()
+                    self._link_normal_chars_no_parens_()
                 with self._option():
                     with self._group():
                         with self._choice():
                             with self._option():
-                                self.link_tail_chars_no_parens()
+                                self._link_tail_chars_no_parens_()
                             with self._option():
-                                self.html_entity()
+                                self._html_entity_()
                             self._error('no available options')
                     with self._ifnot():
-                        self.link_terminators()
+                        self._link_terminators_()
                 with self._option():
                     self._token('&')
                 self._error('expecting one of: &')
@@ -1067,66 +1067,66 @@ class mwParser(Parser):
             self._token('(')
 
     @rule_def
-    def more_link_chars_parens(self):
+    def _more_link_chars_parens_(self):
         def block0():
             with self._choice():
                 with self._option():
-                    self.link_normal_chars_no_parens()
+                    self._link_normal_chars_no_parens_()
                 with self._option():
                     with self._group():
                         with self._choice():
                             with self._option():
-                                self.link_tail_chars()
+                                self._link_tail_chars_()
                             with self._option():
-                                self.html_entity()
+                                self._html_entity_()
                             self._error('no available options')
                     with self._ifnot():
-                        self.link_terminators()
+                        self._link_terminators_()
                 with self._option():
                     self._token('&')
                 self._error('expecting one of: &')
         self._positive_closure(block0)
 
     @rule_def
-    def more_link_chars(self):
+    def _more_link_chars_(self):
         with self._choice():
             with self._option():
-                self.more_link_chars_no_parens()
+                self._more_link_chars_no_parens_()
             with self._option():
-                self.more_link_chars_parens()
+                self._more_link_chars_parens_()
             self._error('no available options')
 
     @rule_def
-    def link_chars(self):
+    def _link_chars_(self):
         self._pattern(r'(http://|https://|ftp://|telnet://|irc://|ircs://|nntp://|worldwind://|mailto:|news:|svn://|git://|mms://|//)')
-        self.more_link_chars()
+        self._more_link_chars_()
 
     @rule_def
-    def external_link(self):
+    def _external_link_(self):
         self._token('[')
-        self.push_ifnot_extlink()
-        self.link_chars()
+        self._push_ifnot_extlink_()
+        self._link_chars_()
         self.ast['target'] = self.last_node
-        self.blank()
+        self._blank_()
         with self._optional():
-            self.push_no_nl()
-            self.inline()
+            self._push_no_nl_()
+            self._inline_()
             self.ast['text'] = self.last_node
-            self.pop_no()
-        self.pop_ifnot()
+            self._pop_no_()
+        self._pop_ifnot_()
         self._token(']')
 
     @rule_def
-    def push_ifnot_extlink(self):
+    def _push_ifnot_extlink_(self):
         pass
 
     @rule_def
-    def plain_link(self):
+    def _plain_link_(self):
         self._pattern(r'(?=\b)(http://|https://|ftp://|telnet://|irc://|ircs://|nntp://|worldwind://|mailto:|news:|svn://|git://|mms://)')
-        self.more_link_chars()
+        self._more_link_chars_()
 
     @rule_def
-    def many_quotes(self):
+    def _many_quotes_(self):
         with self._choice():
             with self._option():
                 self._token("'")
@@ -1142,14 +1142,14 @@ class mwParser(Parser):
             self._error("expecting one of: '")
 
     @rule_def
-    def bold(self):
+    def _bold_(self):
         self._token("'''")
         with self._ifnot():
             self._token("'")
-        self.push_no_nl()
-        self.bold_inline()
+        self._push_no_nl_()
+        self._bold_inline_()
         self.ast['content'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -1162,29 +1162,29 @@ class mwParser(Parser):
                 self._error("expecting one of: ''' \n")
 
     @rule_def
-    def bold_inline(self):
+    def _bold_inline_(self):
         def block0():
             with self._group():
                 with self._choice():
                     with self._option():
                         with self._if():
-                            self.many_quotes()
+                            self._many_quotes_()
                     with self._option():
                         with self._ifnot():
                             self._token("'''")
                     self._error("expecting one of: '''")
-            self.inline_impl_one()
+            self._inline_impl_one_()
         self._closure(block0)
 
     @rule_def
-    def italic(self):
+    def _italic_(self):
         self._token("''")
         with self._ifnot():
             self._token("'")
-        self.push_no_nl()
-        self.italic_inline()
+        self._push_no_nl_()
+        self._italic_inline_()
         self.ast['content'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -1197,13 +1197,13 @@ class mwParser(Parser):
                 self._error("expecting one of: '' \n")
 
     @rule_def
-    def italic_inline(self):
+    def _italic_inline_(self):
         def block0():
             with self._group():
                 with self._choice():
                     with self._option():
                         with self._if():
-                            self.many_quotes()
+                            self._many_quotes_()
                     with self._option():
                         with self._group():
                             with self._if():
@@ -1220,27 +1220,27 @@ class mwParser(Parser):
                                         self._token("'''''")
                                     self._error("expecting one of: '' '''''")
                     self._error("expecting one of: ''' '' '''''")
-            self.inline_impl_one()
+            self._inline_impl_one_()
         self._closure(block0)
 
     @rule_def
-    def bold_and_italic(self):
+    def _bold_and_italic_(self):
         with self._choice():
             with self._option():
-                self.bold_italic_both()
+                self._bold_italic_both_()
             with self._option():
-                self.italic_bold()
+                self._italic_bold_()
             with self._option():
-                self.bold_italic()
+                self._bold_italic_()
             self._error('no available options')
 
     @rule_def
-    def bold_italic_both(self):
+    def _bold_italic_both_(self):
         self._token("'''''")
-        self.push_no_nl()
-        self.bold_italic_inline()
+        self._push_no_nl_()
+        self._bold_italic_inline_()
         self.ast['content'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -1253,15 +1253,15 @@ class mwParser(Parser):
                 self._error("expecting one of: \n '''''")
 
     @rule_def
-    def italic_bold(self):
+    def _italic_bold_(self):
         self._token("'''''")
-        self.push_no_nl()
-        self.bold_italic_inline()
+        self._push_no_nl_()
+        self._bold_italic_inline_()
         self.ast['bold_content'] = self.last_node
         self._token("'''")
-        self.italic_inline()
+        self._italic_inline_()
         self.ast['italic_content'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -1274,15 +1274,15 @@ class mwParser(Parser):
                 self._error("expecting one of: '' \n")
 
     @rule_def
-    def bold_italic(self):
+    def _bold_italic_(self):
         self._token("'''''")
-        self.push_no_nl()
-        self.bold_italic_inline()
+        self._push_no_nl_()
+        self._bold_italic_inline_()
         self.ast['italic_content'] = self.last_node
         self._token("''")
-        self.bold_inline()
+        self._bold_inline_()
         self.ast['bold_content'] = self.last_node
-        self.pop_no()
+        self._pop_no_()
         with self._group():
             with self._choice():
                 with self._option():
@@ -1295,44 +1295,44 @@ class mwParser(Parser):
                 self._error("expecting one of: ''' \n")
 
     @rule_def
-    def bold_italic_inline(self):
+    def _bold_italic_inline_(self):
         def block0():
             with self._group():
                 with self._choice():
                     with self._option():
                         with self._if():
-                            self.many_quotes()
+                            self._many_quotes_()
                     with self._option():
                         with self._ifnot():
                             self._token("''")
                     self._error("expecting one of: ''")
-            self.inline_impl_one()
+            self._inline_impl_one_()
         self._closure(block0)
 
     @rule_def
-    def comment(self):
+    def _comment_(self):
         self._pattern(r'<!--(.|\n)*?-->')
 
     @rule_def
-    def html_entity(self):
+    def _html_entity_(self):
         self._token('&')
         with self._group():
             with self._choice():
                 with self._option():
-                    self.html_named_entity()
+                    self._html_named_entity_()
                 with self._option():
-                    self.html_numbered_entity()
+                    self._html_numbered_entity_()
                 self._error('no available options')
         self.ast['@'] = self.last_node
         self._token(';')
 
     @rule_def
-    def html_named_entity(self):
+    def _html_named_entity_(self):
         self._pattern(r'[a-zA-Z0-9]+')
         self.ast['name'] = self.last_node
 
     @rule_def
-    def html_numbered_entity(self):
+    def _html_numbered_entity_(self):
         self._token('#')
         with self._group():
             with self._choice():
@@ -1346,14 +1346,14 @@ class mwParser(Parser):
                 self._error('expecting one of: [xX] [0-9]+')
 
     @rule_def
-    def html_attribute_value_doublequote(self):
+    def _html_attribute_value_doublequote_(self):
         self._token('"')
         def block0():
             with self._choice():
                 with self._option():
                     self._pattern(r'[^<"&]+')
                 with self._option():
-                    self.html_entity()
+                    self._html_entity_()
                 with self._option():
                     self._token('&')
                 self._error('expecting one of: & [^<"&]+')
@@ -1362,14 +1362,14 @@ class mwParser(Parser):
         self._token('"')
 
     @rule_def
-    def html_attribute_value_singlequote(self):
+    def _html_attribute_value_singlequote_(self):
         self._token("'")
         def block0():
             with self._choice():
                 with self._option():
                     self._pattern(r"[^<'&]+")
                 with self._option():
-                    self.html_entity()
+                    self._html_entity_()
                 with self._option():
                     self._token('&')
                 self._error("expecting one of: & [^<'&]+")
@@ -1378,41 +1378,41 @@ class mwParser(Parser):
         self._token("'")
 
     @rule_def
-    def html_attribute_value_noquote(self):
+    def _html_attribute_value_noquote_(self):
         def block0():
             with self._choice():
                 with self._option():
                     self._pattern(r'[a-zA-Z0-9!#$%()*,\-./:;<>?@[\]^_`{|}~]+')
                 with self._option():
-                    self.html_entity()
+                    self._html_entity_()
                 with self._option():
                     self._token('&')
                 self._error('expecting one of: & [a-zA-Z0-9!#$%()*,\\-./:;<>?@[\\]^_`{|}~]+')
         self._positive_closure(block0)
 
     @rule_def
-    def html_attribute_value(self):
+    def _html_attribute_value_(self):
         with self._choice():
             with self._option():
-                self.html_attribute_value_doublequote()
+                self._html_attribute_value_doublequote_()
             with self._option():
-                self.html_attribute_value_singlequote()
+                self._html_attribute_value_singlequote_()
             with self._option():
-                self.html_attribute_value_noquote()
+                self._html_attribute_value_noquote_()
             self._error('no available options')
 
     @rule_def
-    def html_attribute(self):
-        self.html_attribute_name()
+    def _html_attribute_(self):
+        self._html_attribute_name_()
         self.ast['name'] = self.last_node
-        self.multiline_blank()
+        self._multiline_blank_()
         self._token('=')
-        self.multiline_blank()
-        self.html_attribute_value()
+        self._multiline_blank_()
+        self._html_attribute_value_()
         self.ast['value'] = self.last_node
 
     @rule_def
-    def html_attribute_junk(self):
+    def _html_attribute_junk_(self):
         def block0():
             with self._ifnot():
                 with self._group():
@@ -1422,64 +1422,64 @@ class mwParser(Parser):
                         with self._option():
                             self._token('>')
                         with self._option():
-                            self.html_attribute()
+                            self._html_attribute_()
                         self._error('expecting one of: > />')
             self._pattern(r'(?:[^/<> \t\n]+|/(?!>))*')
             self._pattern(r'[ \t\n]+')
         self._closure(block0)
 
     @rule_def
-    def html_attribute_name(self):
+    def _html_attribute_name_(self):
         self._pattern(r'[:A-Z_a-z0-9][:A-Z_a-z0-9\-.]*')
 
     @rule_def
-    def html_attribute_one(self):
-        self.html_attribute()
+    def _html_attribute_one_(self):
+        self._html_attribute_()
         self.ast['@'] = self.last_node
         with self._optional():
-            self.html_attribute_junk()
+            self._html_attribute_junk_()
 
     @rule_def
-    def html_attributes(self):
+    def _html_attributes_(self):
         with self._optional():
-            self.html_attribute_junk()
+            self._html_attribute_junk_()
         def block0():
-            self.html_attribute_one()
+            self._html_attribute_one_()
         self._closure(block0)
         self.ast['@'] = self.last_node
 
     @rule_def
-    def html_inline(self):
+    def _html_inline_(self):
         self._token('<')
         with self._if():
-            self.html_inline_element()
-        self.push_ifnot_html_tag()
+            self._html_inline_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.inline()
+                    self._inline_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
 
     @rule_def
-    def push_ifnot_html_tag(self):
+    def _push_ifnot_html_tag_(self):
         self._pattern(r'\w+')
 
     @rule_def
-    def html_inline_element(self):
+    def _html_inline_element_(self):
         with self._group():
             with self._choice():
                 with self._option():
@@ -1541,616 +1541,618 @@ class mwParser(Parser):
             self._pattern(r'\w')
 
     @rule_def
-    def nowiki(self):
+    def _nowiki_(self):
         self._token('<')
         with self._if():
-            self.nowiki_element()
-        self.push_ifnot_html_tag()
+            self._nowiki_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.nowiki_inline()
+                    self._nowiki_inline_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
 
     @rule_def
-    def nowiki_element(self):
+    def _nowiki_element_(self):
         with self._group():
             self._token('nowiki')
         with self._ifnot():
             self._pattern(r'\w')
 
     @rule_def
-    def nowiki_inline(self):
+    def _nowiki_inline_(self):
         def block0():
-            self.check_ifnot()
+            self._check_ifnot_()
             with self._group():
                 with self._choice():
                     with self._option():
-                        self.html_entity()
+                        self._html_entity_()
                     with self._option():
-                        self.nowiki_non_special_chars()
+                        self._nowiki_non_special_chars_()
                     with self._option():
                         self._pattern(r'.')
                     self._error('expecting one of: .')
         self._closure(block0)
 
     @rule_def
-    def nowiki_non_special_chars(self):
+    def _nowiki_non_special_chars_(self):
         self._pattern(r'[^<&]+')
 
     @rule_def
-    def pre_nowiki(self):
+    def _pre_nowiki_(self):
         self._token('<')
         with self._if():
-            self.nowiki_element()
-        self.push_ifnot_html_tag()
+            self._nowiki_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.pre_nowiki_inline()
+                    self._pre_nowiki_inline_()
                     self.ast['content'] = self.last_node
                     with self._ifnot():
-                        self.check_ifnot()
+                        self._check_ifnot_()
                     self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
 
     @rule_def
-    def pre_nowiki_inline(self):
+    def _pre_nowiki_inline_(self):
         def block0():
-            self.check_ifnot()
+            self._check_ifnot_()
             with self._ifnot():
                 self._pattern(r'</pre[ \t\n]*>')
             with self._group():
                 with self._choice():
                     with self._option():
-                        self.html_entity()
+                        self._html_entity_()
                     with self._option():
-                        self.nowiki_non_special_chars()
+                        self._nowiki_non_special_chars_()
                     with self._option():
                         self._pattern(r'.')
                     self._error('expecting one of: .')
         self._closure(block0)
 
     @rule_def
-    def pre(self):
+    def _pre_(self):
         self._token('<')
         with self._if():
-            self.pre_element()
-        self.push_ifnot_html_tag()
+            self._pre_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.pre_inline()
+                    self._pre_inline_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def pre_element(self):
+    def _pre_element_(self):
         self._pattern(r'(?i)(?:pre)(?!\w)')
 
     @rule_def
-    def pre_non_special_chars(self):
+    def _pre_non_special_chars_(self):
         self._pattern(r'[^<&]+')
 
     @rule_def
-    def pre_inline(self):
+    def _pre_inline_(self):
         def block0():
-            self.check_ifnot()
+            self._check_ifnot_()
             with self._group():
                 with self._choice():
                     with self._option():
-                        self.html_entity()
+                        self._html_entity_()
                     with self._option():
-                        self.pre_nowiki()
+                        self._pre_nowiki_()
                     with self._option():
-                        self.pre_non_special_chars()
+                        self._pre_non_special_chars_()
                     with self._option():
                         self._pattern(r'.')
                     self._error('expecting one of: .')
         self._closure(block0)
 
     @rule_def
-    def ref(self):
+    def _ref_(self):
         self._token('<')
         with self._if():
-            self.ref_element()
-        self.push_ifnot_html_tag()
+            self._ref_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_block_no_wspre_document()
+                    self._html_block_no_wspre_document_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def ref_element(self):
+    def _ref_element_(self):
         self._pattern(r'(?i)(?:ref)(?!\w)')
 
     @rule_def
-    def html_heading(self):
-        self.blank()
+    def _html_heading_(self):
+        self._blank_()
         self._token('<')
         with self._if():
-            self.html_heading_element()
-        self.push_ifnot_html_tag()
+            self._html_heading_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.heading_content()
+                    self._heading_content_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_heading_element(self):
+    def _html_heading_element_(self):
         self._pattern(r'(?i)(?:h[1-6])(?!\w)')
 
     @rule_def
-    def html_block(self):
-        self.blank()
+    def _html_block_(self):
+        self._blank_()
         self._token('<')
         with self._if():
-            self.html_block_element()
-        self.push_ifnot_html_tag()
+            self._html_block_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_block_document()
+                    self._html_block_document_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_block_document(self):
+    def _html_block_document_(self):
         def block1():
-            self.document_block()
+            self._document_block_()
         self._closure(block1)
         self.ast['blocks'] = self.last_node
 
     @rule_def
-    def html_block_element(self):
+    def _html_block_element_(self):
         self._pattern(r'(?i)(?:center|div|references)(?!\w)')
 
     @rule_def
-    def html_block_no_wspre(self):
-        self.blank()
+    def _html_block_no_wspre_(self):
+        self._blank_()
         self._token('<')
         with self._if():
-            self.html_block_no_wspre_element()
-        self.push_ifnot_html_tag()
+            self._html_block_no_wspre_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_block_no_wspre_document()
+                    self._html_block_no_wspre_document_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_block_no_wspre_element(self):
+    def _html_block_no_wspre_element_(self):
         self._pattern(r'(?i)(?:blockquote)(?!\w)')
 
     @rule_def
-    def html_block_no_wspre_document(self):
-        self.push_wspre_off()
+    def _html_block_no_wspre_document_(self):
+        self._push_wspre_off_()
         def block1():
-            self.document_block()
+            self._document_block_()
         self._closure(block1)
         self.ast['blocks'] = self.last_node
-        self.pop_wspre()
+        self._pop_wspre_()
 
     @rule_def
-    def html_p(self):
-        self.blank()
+    def _html_p_(self):
+        self._blank_()
         self._token('<')
         with self._if():
-            self.html_p_element()
-        self.push_ifnot_html_tag()
+            self._html_p_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_p_inline()
+                    self._html_p_inline_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_p_element(self):
+    def _html_p_element_(self):
         self._pattern(r'(?i)(?:p)(?!\w)')
 
     @rule_def
-    def html_p_inline(self):
-        self.push_wspre_off()
+    def _html_p_inline_(self):
+        self._push_wspre_off_()
         def block0():
             with self._ifnot():
-                self.block_anywhere()
-            self.inline_impl_one()
+                self._block_anywhere_()
+            self._inline_impl_one_()
         self._closure(block0)
-        self.pop_wspre()
+        self._pop_wspre_()
 
     @rule_def
-    def html_table(self):
-        self.blank()
+    def _html_table_(self):
+        self._blank_()
         self._token('<')
         with self._if():
-            self.html_table_element()
-        self.push_ifnot_html_tag()
+            self._html_table_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_table_content()
+                    self._html_table_content_()
                     self.ast['content'] = self.last_node
+                    self._multiline_blank_()
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_table_element(self):
+    def _html_table_element_(self):
         self._pattern(r'(?i)(?:table)(?!\w)')
 
     @rule_def
-    def html_table_content(self):
+    def _html_table_content_(self):
         def block0():
-            self.html_table_content_item()
+            self._html_table_content_item_()
         self._closure(block0)
 
     @rule_def
-    def html_table_content_item(self):
-        self.multiline_blank()
-        self.html_table_tr()
+    def _html_table_content_item_(self):
+        self._multiline_blank_()
+        self._html_table_tr_()
         self.ast['@'] = self.last_node
 
     @rule_def
-    def html_table_tr(self):
+    def _html_table_tr_(self):
         self._token('<')
         with self._if():
-            self.html_table_tr_element()
-        self.push_ifnot_html_tag()
+            self._html_table_tr_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_table_tr_content()
+                    self._html_table_tr_content_()
                     self.ast['content'] = self.last_node
+                    self._multiline_blank_()
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_table_tr_element(self):
+    def _html_table_tr_element_(self):
         self._pattern(r'(?i)(?:tr)(?!\w)')
 
     @rule_def
-    def html_table_tr_content(self):
+    def _html_table_tr_content_(self):
         def block0():
-            self.html_table_tr_content_item()
+            self._html_table_tr_content_item_()
         self._closure(block0)
 
     @rule_def
-    def html_table_tr_content_item(self):
-        self.multiline_blank()
+    def _html_table_tr_content_item_(self):
+        self._multiline_blank_()
         with self._group():
-            self.html_table_cell()
+            self._html_table_cell_()
         self.ast['@'] = self.last_node
 
     @rule_def
-    def html_table_cell(self):
+    def _html_table_cell_(self):
         self._token('<')
         with self._if():
-            self.html_table_cell_element()
-        self.push_ifnot_html_tag()
+            self._html_table_cell_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_block_document()
+                    self._html_block_document_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_table_cell_element(self):
+    def _html_table_cell_element_(self):
         self._pattern(r'(?i)(?:td|th)(?!\w)')
 
     @rule_def
-    def html_list(self):
+    def _html_list_(self):
         self._token('<')
         with self._if():
-            self.html_list_element()
-        self.push_ifnot_html_tag()
+            self._html_list_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_list_content()
+                    self._html_list_content_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_list_element(self):
+    def _html_list_element_(self):
         self._pattern(r'(?i)(?:ul|ol)(?!\w)')
 
     @rule_def
-    def html_list_content(self):
+    def _html_list_content_(self):
         def block0():
-            self.html_list_content_item()
+            self._html_list_content_item_()
         self._closure(block0)
 
     @rule_def
-    def html_list_content_item(self):
-        self.multiline_blank()
+    def _html_list_content_item_(self):
+        self._multiline_blank_()
         with self._group():
-            self.html_list_item()
+            self._html_list_item_()
         self.ast['@'] = self.last_node
 
     @rule_def
-    def html_list_item(self):
+    def _html_list_item_(self):
         self._token('<')
         with self._if():
-            self.html_list_item_element()
-        self.push_ifnot_html_tag()
+            self._html_list_item_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_block_no_wspre_document()
+                    self._html_block_no_wspre_document_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_list_item_element(self):
+    def _html_list_item_element_(self):
         self._pattern(r'(?i)(?:li)(?!\w)')
 
     @rule_def
-    def html_dl(self):
+    def _html_dl_(self):
         self._token('<')
         with self._if():
-            self.html_dl_element()
-        self.push_ifnot_html_tag()
+            self._html_dl_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_dl_content()
+                    self._html_dl_content_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_dl_element(self):
+    def _html_dl_element_(self):
         self._pattern(r'(?i)(?:dl)(?!\w)')
 
     @rule_def
-    def html_dl_content(self):
+    def _html_dl_content_(self):
         def block0():
-            self.html_dl_content_item()
+            self._html_dl_content_item_()
         self._closure(block0)
 
     @rule_def
-    def html_dl_content_item(self):
-        self.multiline_blank()
+    def _html_dl_content_item_(self):
+        self._multiline_blank_()
         with self._group():
-            self.html_dl_item()
+            self._html_dl_item_()
         self.ast['@'] = self.last_node
 
     @rule_def
-    def html_dl_item(self):
+    def _html_dl_item_(self):
         self._token('<')
         with self._if():
-            self.html_dl_item_element()
-        self.push_ifnot_html_tag()
+            self._html_dl_item_element_()
+        self._push_ifnot_html_tag_()
         self.ast['name'] = self.last_node
-        self.html_attributes()
+        self._html_attributes_()
         self.ast['attribs'] = self.last_node
-        self.multiline_blank()
-        self.html_attribute_junk()
+        self._multiline_blank_()
+        self._html_attribute_junk_()
         with self._group():
             with self._choice():
                 with self._option():
                     self._token('/>')
                 with self._option():
                     self._token('>')
-                    self.html_block_no_wspre_document()
+                    self._html_block_no_wspre_document_()
                     self.ast['content'] = self.last_node
                     with self._optional():
                         with self._ifnot():
-                            self.check_ifnot()
+                            self._check_ifnot_()
                         self._pattern(r'</\w+[ \t\n]*>')
                 self._error('expecting one of: />')
-        self.pop_ifnot()
+        self._pop_ifnot_()
         with self._optional():
-            self.empty_line()
+            self._empty_line_()
 
     @rule_def
-    def html_dl_item_element(self):
+    def _html_dl_item_element_(self):
         self._pattern(r'(?i)(?:dt|dd)(?!\w)')
 
 
