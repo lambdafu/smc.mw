@@ -76,3 +76,11 @@ whitespace in tr and table elements
 !! result
 <table><tr><th>x</th></tr></table>
 !! end
+
+!! test
+nowiki pseudo-element inside attribute
+!! input
+<div class="foo<nowiki> </nowiki>bar">baz</div>
+!! result
+<div class="foo bar">baz</div>
+!! end

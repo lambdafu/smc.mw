@@ -367,8 +367,8 @@ html_numbered_entity = "#" (number: ?/[0-9]+/? | ?/[xX]/? hexnumber: ?/[0-9a-fA-
    can be, such as <br*/>, but not <, which is replaced in the HTML
    sanitizer (removeHTMLtags).  *)
 (* QUIRK: Attribute values can span multiple lines but do not respect bol_skip.  *)
-html_attribute_value_doublequote = '"' @ { ?/[^<"&]+/? | html_entity | "&" } * '"' ;
-html_attribute_value_singlequote = "'" @ { ?/[^<'&]+/? | html_entity | "&" } * "'" ;
+html_attribute_value_doublequote = '"' @ { ?/[^<"&]+/? | html_entity | nowiki | "&" } * '"' ;
+html_attribute_value_singlequote = "'" @ { ?/[^<'&]+/? | html_entity | nowiki | "&" } * "'" ;
 html_attribute_value_noquote = { ?/[a-zA-Z0-9!#$%()*,\-./:;<>?@[\]^_`{|}~]+/? | html_entity | "&" } + ;
 html_attribute_value = html_attribute_value_doublequote | html_attribute_value_singlequote | html_attribute_value_noquote ;
 html_attribute = name:html_attribute_name multiline_blank "=" multiline_blank value:html_attribute_value  ;

@@ -12,7 +12,7 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 from grako.parsing import * # @UnusedWildImport
 from grako.exceptions import * # @UnusedWildImport
 
-__version__ = '13.276.03.58.54'
+__version__ = '13.279.03.04.47'
 
 class mwParser(Parser):
     def __init__(self, whitespace='', nameguard=False, **kwargs):
@@ -1355,6 +1355,8 @@ class mwParser(Parser):
                 with self._option():
                     self._html_entity_()
                 with self._option():
+                    self._nowiki_()
+                with self._option():
                     self._token('&')
                 self._error('expecting one of: & [^<"&]+')
         self._closure(block0)
@@ -1370,6 +1372,8 @@ class mwParser(Parser):
                     self._pattern(r"[^<'&]+")
                 with self._option():
                     self._html_entity_()
+                with self._option():
+                    self._nowiki_()
                 with self._option():
                     self._token('&')
                 self._error("expecting one of: & [^<'&]+")
