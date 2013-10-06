@@ -12,7 +12,7 @@ else:
 
 setup_info = dict(
     name="smc.mw",
-    version="0.1",
+    version="0.2",
     packages=["smc.mw"],
     namespace_packages=["smc"],
     zip_safe=True,
