@@ -149,3 +149,9 @@ class Settings(object):
         if self.capital_links:
             name = name[:1].upper() + name[1:]
         return namespace, name
+
+    def expand_page_name(self, namespace, pagename):
+        if namespace.prefix == "":
+            return pagename
+        ns = self.namespaces.canonical_name(namespace)
+        return ns + ":" + pagename

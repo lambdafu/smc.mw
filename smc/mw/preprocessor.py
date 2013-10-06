@@ -256,7 +256,7 @@ class PreprocessorFrame(object):
         template = self.context.get_template(namespace, pagename)
         if template is None:
             # FIXME.
-            return "[[Template:" + name + "]]"
+            return "[[" + self.context.settings.expand_page_name(namespace, pagename) + "]]"
 
         named_arguments = { }
         unnamed_arguments = []
