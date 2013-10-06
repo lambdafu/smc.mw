@@ -5,6 +5,9 @@ python:
 env:
   - LXML_VERSION=2.3
   - LXML_VERSION=3.2.3
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq python-utidylib
 install:
   - pip install -q grako --use-mirrors
   - pip install -q lxml==$LXML_VERSION --use-mirrors
