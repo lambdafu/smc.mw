@@ -12,6 +12,8 @@ include tests/static/*
 include tests/out/README.txt
 include tests/out/report-0001.dat
 include tests/out/report-0001.html
+include tests/out/report-0002.dat
+include tests/out/report-0002.html
 global-exclude *.pyc
 global-exclude *.pyo
 global-exclude *~
