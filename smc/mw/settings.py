@@ -27,6 +27,16 @@ default_namespaces = [
       "name": { "en": "Talk",
                 "de": "Diskussion" }},
 
+    { "prefix": "user",
+      "ident": 2,
+      "name": { "en": "User",
+                "de": "Benutzer" }},
+
+    { "prefix": "project talk",
+      "ident": 3,
+      "name": { "en": "User talk",
+                "de": "Benutzer Diskussion" }},
+
     { "prefix": "project",
       "ident": 4,
       "name": { "en": "Project",
@@ -53,7 +63,7 @@ default_namespaces = [
                 "de": "Hilfe" }},
 
     { "prefix": "help talk",
-      "ident": 11,
+      "ident": 13,
       "name": { "en": "Help talk",
                 "de": "Hilfe Diskussion" }}
 ]

@@ -48,15 +48,10 @@ class TestPreprocessor(mw.Preprocessor):
     def get_time(self, utc=False):
         return datetime.datetime(1970, 1, 1, 0, 2)
 
-    def get_template(self, name):
-        name = name.lower()
-        tmpl = self.templates.get(name, None)
-        if tmpl is None and name.startswith("template:"):
-            name = name[9:]
-            tmpl = self.templates.get(name.lower(), None)
-        if tmpl is None and not name.startswith("template:"):
-            name = "Template:" + name
-            tmpl = self.templates.get(name.lower(), None)
+    def get_template(self, namespace, pagename):
+        if namespace.prefix != "template":
+            return None
+        tmpl = self.templates.get((namespace.prefix, pagename), None)
         return tmpl
 
 class TestSemantics(mw.Semantics):
@@ -244,7 +239,8 @@ def main(default_dir, output_file, filter=None):
         results = []
         for case in test_data:
             if case["type"] == "article":
-                preprocessor.templates[case["title"].lower()] = case["text"]
+                ns, pn = preprocessor.settings.canonical_page_name(case["title"])
+                preprocessor.templates[(ns.prefix, pn)] = case["text"]
             else:
                 test_index = test_index + 1
                 case["index"] = test_index

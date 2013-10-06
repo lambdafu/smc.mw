@@ -251,10 +251,11 @@ class PreprocessorFrame(object):
             if parser_func is not None:
                 return parser_func
 
-        # template_ns = self.context.settings.namespaces.find("template")
-        # namespace, pagename = self.context.settings.canonical_page_name(name, default_namespace=template_ns)
-        template = self.context.get_template(name)
+        template_ns = self.context.settings.namespaces.find("template")
+        namespace, pagename = self.context.settings.canonical_page_name(name, default_namespace=template_ns)
+        template = self.context.get_template(namespace, pagename)
         if template is None:
+            # FIXME.
             return "[[Template:" + name + "]]"
 
         named_arguments = { }
@@ -549,5 +550,5 @@ class Preprocessor(object):
         else:
             return None
 
-    def get_template(self, name):
+    def get_template(self, namespace, pagename):
         return None
