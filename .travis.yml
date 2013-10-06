@@ -11,5 +11,4 @@ before_install:
 install:
   - pip install -q grako --use-mirrors
   - pip install -q lxml==$LXML_VERSION --use-mirrors
-  - pip install -q uTidylib --use-mirrors
 script: make -C tests
