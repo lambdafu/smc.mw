@@ -166,6 +166,8 @@ def postprocess_toc(root):
     ids = {}
     # headings = root.iter(["h1", "h2", "h3", "h4", "h5", "h6"])
     headings = iter_from_list(root, ["h1", "h2", "h3", "h4", "h5", "h6"])
+    headings = list(headings)
+
     for el in headings:
         span = el[0]
         ident = span.get("id")
@@ -179,7 +181,7 @@ def postprocess_toc(root):
     # Get forcetoc flag.
     forcetoc = root.findall(".//forcetoc")
     if len(forcetoc) == 0:
-        forcetoc == False
+        forcetoc = False
     else:
         for el in forcetoc:
             el.getparent().remove(el)
@@ -188,7 +190,7 @@ def postprocess_toc(root):
     # Get notoc flag.
     notoc = root.findall(".//notoc")
     if len(notoc) == 0:
-        notoc == False
+        notoc = False
     else:
         for el in notoc:
             el.getparent().remove(el)
@@ -231,7 +233,6 @@ def postprocess_toc(root):
             first_h_el = h_el
 
         level = int(h_el.tag[1])
-
         # Find the appropriate insertion point.
         pos = bisect_left(levels, level)
         undo_levels = levels[pos:]
@@ -294,6 +295,7 @@ def postprocess_toc(root):
     # FIXME: Can be configurable.
     #min_top = 3
     min_toc = 4
+
     if ident_nr == 0 or (toc is None and not forcetoc and ident_nr < min_toc):
         # Bail out.
         if toc is not None:
