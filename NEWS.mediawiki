@@ -2,6 +2,25 @@
 
 This file contains a list of user-visible changes.
 
+===Version 0.3 (YYYY-MM-DD)===
+
+* Generator fixes:
+** Table of content generation fixed.
+** I18n and l10n for Table of content header.
+
+===Version 0.2 (2013-10-06)===
+
+* Support lxml 2.x.
+* Generator fixes:
+** Run preprocessor in MediaWiki class.
+** Use canonical name for template callback.
+** Localise missing template links.
+* Syntax fixes:
+** Allow whitespace before closing tr and table tags.
+** Fix #if and #ifeq.
+** Implement #switch.
+** Allow nowiki in quoted HTML attributes.
+
 ===Version 0.1 (2013-09-06)===
 
 * Initial release.
