@@ -33,6 +33,7 @@ from grako.ast import AST
 
 from . mw import mwParser as Parser
 from . html import entity_by_name, attribute_whitelist, css_filter, escape_id
+from . settings import Settings
 
 
 def tprint(*args, **kwargs):
@@ -161,7 +162,7 @@ def postprocess_references(root):
         references.getparent().replace(references, refblock)
         
 
-def postprocess_toc(root):
+def postprocess_toc(root, settings):
     # FIRST make identifiers unique.
     ids = {}
     # headings = root.iter(["h1", "h2", "h3", "h4", "h5", "h6"])
@@ -216,7 +217,7 @@ def postprocess_toc(root):
     toctitle.set("class", "toctitle")
 
     head = etree.SubElement(toctitle, "h2")
-    head.text = "Inhaltsverzeichnis"
+    head.text = settings.get_msg("toc")
 
     # Running count of sections (including skipped levels).
     ident_nr = 0
@@ -450,8 +451,11 @@ class mwSemantics(object):
     # Goal: Something like
     # http://www.mediawiki.org/wiki/Parsoid/MediaWiki_DOM_spec
 
-    def __init__(self, context):
+    def __init__(self, context, settings=None):
         self._context = context
+        if settings is None:
+            settings = Settings()
+        self.settings = settings
 
     @contextmanager
     def _state(self):
@@ -563,7 +567,7 @@ class mwSemantics(object):
             el.attrib.pop("level")
 
         postprocess_references(html)
-        postprocess_toc(html)
+        postprocess_toc(html, self.settings)
 
         return html
 

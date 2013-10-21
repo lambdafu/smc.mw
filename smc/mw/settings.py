@@ -5,6 +5,11 @@ from __future__ import print_function, absolute_import, division
 
 import re
 
+MSGCAT = {
+    "toc": { "en": "Contents",
+             "de": "Inhaltsverzeichnis" },
+    }
+
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):
         super(AttrDict, self).__init__(*args, **kwargs)
@@ -121,6 +126,7 @@ class Settings(object):
         self.language = lang
         self.capital_links = True
         self.namespaces = Namespaces([Namespace(ns) for ns in default_namespaces], lang=lang)
+        self.msgcat = MSGCAT
 
     def canonical_page_name(self, name, default_namespace=""):
         """Return the namespace (or None) and the canonical page name."""
@@ -155,3 +161,6 @@ class Settings(object):
             return pagename
         ns = self.namespaces.canonical_name(namespace)
         return ns + ":" + pagename
+
+    def get_msg(self, msg):
+        return self.msgcat[msg][self.language]
