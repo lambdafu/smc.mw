@@ -16,7 +16,6 @@ import json
 from collections import OrderedDict
 from functools import wraps
 from timeit import Timer
-from StringIO import StringIO
 import datetime
 
 from lxml import etree, html
