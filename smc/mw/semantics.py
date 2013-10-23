@@ -411,7 +411,7 @@ class SemanticsTracer(object):
         attr = None
         try:
             attr = getattr(semantics, name)
-        except Exception, e:
+        except Exception as e:
             if trace:
                 def newfunc(ast):
                     tprint('AST %s (not implemented)' % name)
@@ -428,7 +428,7 @@ class SemanticsTracer(object):
             tprint('AST %s' % name)
             try:
                 result = attr(ast)
-            except Exception, e:
+            except Exception as e:
                 tprint('- %s' % repr(ast))
                 raise e
             if ast == result:
