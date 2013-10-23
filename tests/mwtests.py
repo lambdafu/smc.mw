@@ -16,7 +16,6 @@ import json
 from collections import OrderedDict
 from functools import wraps
 from timeit import Timer
-import tidy
 from StringIO import StringIO
 import datetime
 
@@ -37,6 +36,7 @@ def iter_from_list(root, tags):
     return iter_()
 
 from smc import mw
+from mytidylib import tidy_fragment as tidy
 
 import testspec_impl as testspec
 
@@ -120,16 +120,11 @@ def clean_output(output):
     return output
 
 def tidy_equal(output, expect):
-    t1 = StringIO()
-    t2 = StringIO()
-
     expect = clean_expect(expect)
     output = clean_output(output)
-    tidy.parseString(expect.encode("utf-8")).write(t1)
-    tidy.parseString(output.encode("utf-8")).write(t2)    
-    #print (t1.getvalue())
-    #print (t2.getvalue())
-    return t1.getvalue() == t2.getvalue()
+    t1 = tidy(expect)[0]
+    t2 = tidy(output)[0]
+    return t1 == t2
 
 class Test(object):
     # index: running count in the input file

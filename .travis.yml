@@ -7,10 +7,9 @@ env:
   - LXML_VERSION=3.2.3
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq python-utidylib
+  - sudo apt-get install -qq libtidy
 install:
   - pip install -q grako --use-mirrors
   - pip install -q lxml==$LXML_VERSION --use-mirrors
-  - pip install -q git+https://github.com/nijel/utidylib
   - pip install -q .
 script: make -C tests
