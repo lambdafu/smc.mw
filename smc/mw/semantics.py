@@ -35,6 +35,20 @@ from . mw import mwParser as Parser
 from . html import entity_by_name, attribute_whitelist, css_filter, escape_id
 from . settings import Settings
 
+try:
+    basestring
+except:
+    basestring = str
+
+try:
+    unicode
+except:
+    unicode = str
+
+try:
+    unichr(65)
+except:
+    unichr = chr
 
 def tprint(*args, **kwargs):
     kwargs['file'] = sys.stderr
@@ -62,7 +76,7 @@ def postprocess_references(root):
     # A dictionary, keyed by group and value is list of ref indexes for each definition.
     ref_groups = {}
 
-    for ref_index, ((group, name), ref_list) in enumerate(refs.iteritems()):
+    for ref_index, ((group, name), ref_list) in enumerate(refs.items()):
         ref_group = ref_groups.setdefault(group, [])
         # This is the index of the reference definition in the by-group list.
         ref_group_index = len(ref_group)
@@ -86,7 +100,7 @@ def postprocess_references(root):
             fn.tail = ref.tail
             ref.getparent().replace(ref, fn)
 
-    refs_as_list = list(refs.itervalues())
+    refs_as_list = list(refs.values())
     
     # Now generate the reference definition lists.
     all_references = root.findall(".//references")
@@ -246,7 +260,7 @@ def postprocess_toc(root, settings):
             toc_nrs.append(1)
         else:
             toc_nrs = toc_nrs[:pos] + [toc_nrs[pos] + 1]
-            for _ in xrange(len(undo_levels) - 1):
+            for _ in range(len(undo_levels) - 1):
                 cur_el = cur_el.getparent().getparent()
 
         if new_sublist:
@@ -324,7 +338,7 @@ class SemanticsState(dict):
         if isinstance(obj, list):
             return tuple(_convert(i) for i in obj)
         elif isinstance(obj, dict):
-            return frozenset((i, _convert(j)) for i, j in obj.iteritems())
+            return frozenset((i, _convert(j)) for i, j in obj.items())
         else:
             return obj
 
@@ -414,7 +428,7 @@ class SemanticsTracer(object):
         attr = None
         try:
             attr = getattr(semantics, name)
-        except Exception, e:
+        except Exception as e:
             if trace:
                 def newfunc(ast):
                     tprint('AST %s (not implemented)' % name)
@@ -431,7 +445,7 @@ class SemanticsTracer(object):
             tprint('AST %s' % name)
             try:
                 result = attr(ast)
-            except Exception, e:
+            except Exception as e:
                 tprint('- %s' % repr(ast))
                 raise e
             if ast == result:
@@ -804,7 +818,7 @@ class mwSemantics(object):
         el.extend(rows)
         self._set_attributes(el, ast.attribs)
         if ast.indent is not None:
-            for _ in xrange(len(ast.indent)):
+            for _ in range(len(ast.indent)):
                 dl_el = etree.Element("dl")
                 dd_el = etree.SubElement(dl_el, "dd")
                 dd_el.append(el)

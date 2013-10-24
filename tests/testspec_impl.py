@@ -4,6 +4,8 @@
 
 from __future__ import print_function, division, absolute_import, unicode_literals
 
+import sys
+
 from testspec import testspecParser as TestspecParser
 
 class TestspecSemantics(object):
@@ -29,7 +31,9 @@ class TestspecSemantics(object):
         return "".join(ast)[:-1]
 
 def load(fp):
-    text = fp.read().decode("UTF-8")
+    text = fp.read()
+    if sys.version < '3':
+        text = text.decode("utf-8")
     parser = TestspecParser(parseinfo=False)
     ast = parser.parse(text, "document", semantics=TestspecSemantics())
     return ast

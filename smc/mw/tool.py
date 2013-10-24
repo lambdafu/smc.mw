@@ -43,7 +43,10 @@ def run_parser(text, filename=None, start=None, profile_data=None, trace=False):
     parser = mw.Parser(parseinfo=False,  whitespace='', nameguard=False)
     ast = parser.parse(text, start, filename=filename, semantics=mw.Semantics(parser),
                        trace=trace, nameguard=False, whitespace='')
-    text = etree.tostring(ast)
+    if sys.version < '3':
+        text = etree.tostring(ast)
+    else:
+        text = etree.tostring(ast, encoding=str)
     return text
 
 def process(input=None, output=None, start=None, stages=None, profile=False, trace=False):
@@ -71,7 +74,8 @@ def process(input=None, output=None, start=None, stages=None, profile=False, tra
         for data in profile_data.values():
             print("{stage}: {time:.3f} msecs".format(**data), file=sys.stderr)
 
-    result = result.encode("UTF-8")
+    if sys.version < '3':
+        result = result.encode("UTF-8")
     if output is None:
         sys.stdout.write(result)
     else:

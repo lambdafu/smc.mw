@@ -16,9 +16,12 @@ import json
 from collections import OrderedDict
 from functools import wraps
 from timeit import Timer
-import tidy
-from StringIO import StringIO
 import datetime
+
+try:
+    unicode
+except:
+    unicode = str
 
 from lxml import etree, html
 try:
@@ -37,6 +40,7 @@ def iter_from_list(root, tags):
     return iter_()
 
 from smc import mw
+from mytidylib import tidy_fragment as tidy
 
 import testspec_impl as testspec
 
@@ -109,7 +113,7 @@ def clean_expect(expect):
     else:
         text = ""
     for node in list(body):
-        text = text + html.tostring(node)
+        text = text + html.tostring(node, encoding=unicode)
 
     # QUIRK: Wrong application of nbsp for inline definition list items.
     text = text.replace(r"&#160;</dt>", " </dt>")
@@ -120,16 +124,11 @@ def clean_output(output):
     return output
 
 def tidy_equal(output, expect):
-    t1 = StringIO()
-    t2 = StringIO()
-
     expect = clean_expect(expect)
     output = clean_output(output)
-    tidy.parseString(expect.encode("utf-8")).write(t1)
-    tidy.parseString(output.encode("utf-8")).write(t2)    
-    #print (t1.getvalue())
-    #print (t2.getvalue())
-    return t1.getvalue() == t2.getvalue()
+    t1 = tidy(expect)[0]
+    t2 = tidy(output)[0]
+    return t1 == t2
 
 class Test(object):
     # index: running count in the input file
@@ -191,7 +190,7 @@ class Test(object):
         # ast[0] is "body"
         for node in body.getchildren():
             # tostring adds tail
-            text = text + etree.tostring(node)
+            text = text + etree.tostring(node, encoding=unicode)
         return text
 
     def run(self):
