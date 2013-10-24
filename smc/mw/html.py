@@ -5,6 +5,11 @@ from __future__ import print_function, absolute_import, division
 
 import re
 
+try:
+    unichr(65)
+except:
+    unichr = chr
+
 # http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
 # (from the HTML 4 DTD)
 entity_by_name = {

@@ -18,6 +18,11 @@ from . settings import Settings
 
 AUTO_NEWLINE_RE = re.compile(r"(?:{\||[:;#*])")
 
+try:
+    basestring
+except:
+    basestring = str
+
 class ParserFuncArguments(object):
     def __init__(self, parent, first, args):
         self.parent = parent
@@ -315,7 +320,7 @@ class PreprocessorFrame(object):
                                                   for el in dom])
         while True:
             try:
-                event, el = iterator.next()
+                event, el = next(iterator)
             except StopIteration:
                 break
 
@@ -343,7 +348,7 @@ class PreprocessorFrame(object):
 
             if skip:
                 while True:
-                    new_event, new_el = iterator.next()
+                    new_event, new_el = next(iterator)
                     if new_el == el and new_event == "end":
                          break
                 if el.tail:

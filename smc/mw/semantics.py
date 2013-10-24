@@ -34,6 +34,15 @@ from grako.ast import AST
 from . mw import mwParser as Parser
 from . html import entity_by_name, attribute_whitelist, css_filter, escape_id
 
+try:
+    basestring
+except:
+    basestring = str
+
+try:
+    unicode
+except:
+    unicode = str
 
 def tprint(*args, **kwargs):
     kwargs['file'] = sys.stderr
@@ -61,7 +70,7 @@ def postprocess_references(root):
     # A dictionary, keyed by group and value is list of ref indexes for each definition.
     ref_groups = {}
 
-    for ref_index, ((group, name), ref_list) in enumerate(refs.iteritems()):
+    for ref_index, ((group, name), ref_list) in enumerate(refs.items()):
         ref_group = ref_groups.setdefault(group, [])
         # This is the index of the reference definition in the by-group list.
         ref_group_index = len(ref_group)
@@ -85,7 +94,7 @@ def postprocess_references(root):
             fn.tail = ref.tail
             ref.getparent().replace(ref, fn)
 
-    refs_as_list = list(refs.itervalues())
+    refs_as_list = list(refs.values())
     
     # Now generate the reference definition lists.
     all_references = root.findall(".//references")
@@ -321,7 +330,7 @@ class SemanticsState(dict):
         if isinstance(obj, list):
             return tuple(_convert(i) for i in obj)
         elif isinstance(obj, dict):
-            return frozenset((i, _convert(j)) for i, j in obj.iteritems())
+            return frozenset((i, _convert(j)) for i, j in obj.items())
         else:
             return obj
 
