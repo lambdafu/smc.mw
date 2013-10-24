@@ -3,6 +3,11 @@ smc.mw
 
 A mediawiki-compatible parser for Python.
 
+Current status:
+
+.. image:: https://travis-ci.org/lambdafu/smc.mw.png
+   :target: http://travis-ci.org/lambdafu/smc.mw
+
 Using
 =====
 
