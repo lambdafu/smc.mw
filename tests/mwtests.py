@@ -23,6 +23,11 @@ try:
 except:
     unicode = str
 
+try:
+    unichr(65)
+except:
+    unichr = chr
+
 from lxml import etree, html
 try:
     lxml_no_iter_list = False
@@ -118,6 +123,8 @@ def clean_expect(expect):
     # QUIRK: Wrong application of nbsp for inline definition list items.
     text = text.replace(r"&#160;</dt>", " </dt>")
     text = text.replace(r"&#160;:", " :")
+    text = text.replace(unichr(160) + r"</dt>", " </dt>")
+    text = text.replace(unichr(160) + r":", " :")
     return text
 
 def clean_output(output):
@@ -190,7 +197,7 @@ class Test(object):
         # ast[0] is "body"
         for node in body.getchildren():
             # tostring adds tail
-            text = text + etree.tostring(node, encoding=unicode)
+            text = text + etree.tostring(node).decode("utf-8")
         return text
 
     def run(self):

@@ -40,8 +40,12 @@ def load(fp):
 
 def main(filename, startrule, trace=False):
     import json
-    with open(filename) as f:
-        text = f.read().decode("UTF-8")
+    if sys.version < '3':
+        with my_open(filename) as f:
+            text = f.read().decode("UTF-8")
+    else:
+        with my_open(filename, encoding="utf-8") as f:
+            text = f.read()
     parser = TestspecParser(parseinfo=False)
     ast = parser.parse(text, startrule, filename=filename, trace=trace, semantics=TestspecSemantics())
     print('JSON:')

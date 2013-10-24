@@ -12,6 +12,11 @@ import itertools
 from lxml import etree
 from collections import Counter, defaultdict
 
+try:
+    unicode
+except:
+    unicode = str
+
 def jquery_show(what=None):
     show_all = '$("table.tests > tbody > tr").show();'
     if what is None:
@@ -78,7 +83,7 @@ def append_code(el, code):
     code_el.text = code
 
 def html_report(tests, old_tests=None):
-    tests = map(TestGroup, tests)
+    tests = list(map(TestGroup, tests))
 
     html = etree.Element("html")
     html_header = etree.SubElement(html, "head")
@@ -276,12 +281,11 @@ def html_report(tests, old_tests=None):
 
                 
     for test_group in tests:
-        if old_tests:
-            if test_group.filename in old_tests:
-                old_group = old_tests[test_group.filename]
-                group_cmp = TestGroupCmp(old_group, test_group)
-            else:
-                group_cmp = None
+        if old_tests and test_group.filename in old_tests:
+            old_group = old_tests[test_group.filename]
+            group_cmp = TestGroupCmp(old_group, test_group)
+        else:
+            group_cmp = None
 
         h = etree.SubElement(body, "h2")
         h.text = test_group.filename
@@ -345,7 +349,7 @@ def html_report(tests, old_tests=None):
 
             if len(test["options"].keys()) > 0:
                 ul = etree.SubElement(description, "ul")
-                for key, val in test["options"].iteritems():
+                for key, val in test["options"].items():
                     li = etree.SubElement(ul, "li")
                     if val == True:
                         li.text = key
@@ -366,8 +370,9 @@ def html_report(tests, old_tests=None):
                 append_code(output, test["output"])
             else:
                 output.text = " "
-    with open("out/report.html", "w") as fh:
-        fh.write(etree.tostring(html, pretty_print=True, doctype="<!DOCTYPE html>", method="html"))
+    with open("out/report.html", "wb") as fh:
+        res = etree.tostring(html, pretty_print=True, doctype="<!DOCTYPE html>", method="html")
+        fh.write(res)
 
 def performance_report(tests):
     import matplotlib.pyplot as plt
