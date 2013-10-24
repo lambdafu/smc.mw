@@ -4,6 +4,8 @@ This file contains a list of user-visible changes.
 
 ===Version 0.3 (YYYY-MM-DD)===
 
+* Support Python 3.
+* Integrate Travis Continuous Integration.
 * Generator fixes:
 ** Table of content generation fixed.
 ** I18n and l10n for Table of content header.
