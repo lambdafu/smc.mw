@@ -50,7 +50,7 @@ class ParserFuncArguments(object):
         name_count = el.xpath("count(name)")
         if name_count <= 0:
             return None
-        name_el = el.iterchildren("name").next()
+        name_el = next(el.iterchildren("name"))
         name = self.parent.expand(name_el)
         return name
 
@@ -64,7 +64,7 @@ class ParserFuncArguments(object):
         if index == 0:
             return self.first
         el = self.args[index - 1]
-        value_el = el.iterchildren("value").next()
+        value_el = next(el.iterchildren("value"))
         value = self.parent.expand(value_el)
         return value
 
@@ -224,13 +224,13 @@ class PreprocessorFrame(object):
         return value
 
     def _expand_argument(self, el):
-        name_el = el.iterchildren("name").next()
+        name_el = next(el.iterchildren("name"))
         orig_name = self.expand(name_el)
         name = orig_name.strip()
         if self.parent is None or not self.has_argument(name):
             default_count = el.xpath("count(default)")
             if default_count > 0:
-                default_el = el.iterchildren("default").next()
+                default_el = next(el.iterchildren("default"))
                 default = self.expand(default_el)
                 return default
             else:
@@ -240,7 +240,7 @@ class PreprocessorFrame(object):
 
     def _expand_template(self, el):
         # FIXME: subst, safesubst, msgnw, msg, raw
-        name_el = el.iterchildren("name").next()
+        name_el = next(el.iterchildren("name"))
         name = self.expand(name_el).strip()
         bol = bool(el.get("bol", False))
 
@@ -269,10 +269,10 @@ class PreprocessorFrame(object):
         unnamed_index = 0
 
         for arg_el in arg_els:
-            arg_value_el = arg_el.iterchildren("value").next()
+            arg_value_el = next(arg_el.iterchildren("value"))
             arg_name_count = arg_el.xpath("count(name)")
             if arg_name_count > 0:
-                arg_name_el = arg_el.iterchildren("name").next()
+                arg_name_el = next(arg_el.iterchildren("name"))
                 # QUIRK: Whitespace around named arguments is removed.
                 arg_name = self.expand(arg_name_el).strip()
                 named_arguments[arg_name] = arg_value_el
@@ -530,7 +530,7 @@ class Preprocessor(object):
             # The default value seen.
             # QUIRK: For #default, last match wins (unless first_arg is "#default").
             default = None
-            for arg in xrange(1, args_cnt):
+            for arg in range(1, args_cnt):
                 name = args.get_name(arg)
                 value = args.get_value(arg)
                 if name is not None:

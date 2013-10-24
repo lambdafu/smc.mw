@@ -18,6 +18,11 @@ from functools import wraps
 from timeit import Timer
 import datetime
 
+try:
+    unicode
+except:
+    unicode = str
+
 from lxml import etree, html
 try:
     lxml_no_iter_list = False
@@ -108,7 +113,7 @@ def clean_expect(expect):
     else:
         text = ""
     for node in list(body):
-        text = text + html.tostring(node)
+        text = text + html.tostring(node, encoding=unicode)
 
     # QUIRK: Wrong application of nbsp for inline definition list items.
     text = text.replace(r"&#160;</dt>", " </dt>")
@@ -185,7 +190,7 @@ class Test(object):
         # ast[0] is "body"
         for node in body.getchildren():
             # tostring adds tail
-            text = text + etree.tostring(node)
+            text = text + etree.tostring(node, encoding=unicode)
         return text
 
     def run(self):

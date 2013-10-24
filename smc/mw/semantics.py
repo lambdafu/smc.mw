@@ -44,6 +44,11 @@ try:
 except:
     unicode = str
 
+try:
+    unichr(65)
+except:
+    unichr = chr
+
 def tprint(*args, **kwargs):
     kwargs['file'] = sys.stderr
     print(*args, **kwargs)
@@ -253,7 +258,7 @@ def postprocess_toc(root):
             toc_nrs.append(1)
         else:
             toc_nrs = toc_nrs[:pos] + [toc_nrs[pos] + 1]
-            for _ in xrange(len(undo_levels) - 1):
+            for _ in range(len(undo_levels) - 1):
                 cur_el = cur_el.getparent().getparent()
 
         if new_sublist:
@@ -807,7 +812,7 @@ class mwSemantics(object):
         el.extend(rows)
         self._set_attributes(el, ast.attribs)
         if ast.indent is not None:
-            for _ in xrange(len(ast.indent)):
+            for _ in range(len(ast.indent)):
                 dl_el = etree.Element("dl")
                 dd_el = etree.SubElement(dl_el, "dd")
                 dd_el.append(el)
