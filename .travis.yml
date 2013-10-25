@@ -16,7 +16,6 @@ install:
   - pip install coveralls --use-mirrors
   - pip install -q grako --use-mirrors
   - pip install -q lxml==$LXML_VERSION --use-mirrors
-  - pip install -q .
 script:
   PYTHONPATH=. coverage run --source=smc tests/mwtests.py
 after_success:
