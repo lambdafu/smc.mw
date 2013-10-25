@@ -1,7 +1,8 @@
 # Copyright 2013 semantics GmbH
 # Written by Marcus Brinkmann <m.brinkmann@semantics.de>
 
-from __future__ import print_function, division, absolute_import, unicode_literals
+from __future__ import print_function, division
+from __future__ import absolute_import, unicode_literals
 
 import argparse
 import sys
@@ -25,31 +26,38 @@ def profiled(stage):
             time = timer.timeit(number=1)
             profile_data = kwargs.get("profile_data", None)
             if profile_data is not None:
-                profile_data[stage] = { "stage": stage, "time": time * 1000 };
+                profile_data[stage] = {"stage": stage, "time": time * 1000}
             return result[0]
         return wrapper
     return _decorator
 
+
 @profiled("preprocessor")
-def run_preprocessor(text, filename=None, start=None, profile_data=None, trace=False):
+def run_preprocessor(text, filename=None, start=None, profile_data=None,
+                     trace=False):
     if start is None:
         start = "document"
     return mw.Preprocessor().expand(None, text)
 
+
 @profiled("parser")
-def run_parser(text, filename=None, start=None, profile_data=None, trace=False):
+def run_parser(text, filename=None, start=None, profile_data=None,
+               trace=False):
     if start is None:
         start = "document"
     parser = mw.Parser(parseinfo=False,  whitespace='', nameguard=False)
-    ast = parser.parse(text, start, filename=filename, semantics=mw.Semantics(parser),
-                       trace=trace, nameguard=False, whitespace='')
+    ast = parser.parse(text, start, filename=filename,
+                       semantics=mw.Semantics(parser), trace=trace,
+                       nameguard=False, whitespace='')
     if sys.version < '3':
         text = etree.tostring(ast)
     else:
         text = etree.tostring(ast, encoding=str)
     return text
 
-def process(input=None, output=None, start=None, stages=None, profile=False, trace=False):
+
+def process(input=None, output=None, start=None, stages=None,
+            profile=False, trace=False):
     if input is None:
         filename = "-"
         input = sys.stdin.read()
@@ -61,14 +69,17 @@ def process(input=None, output=None, start=None, stages=None, profile=False, tra
     profile_data = OrderedDict()
     # If all stages are run, start only applies to the parser state.
     if stages is None:
-        result = run_preprocessor(input, filename=filename, profile_data=profile_data)
+        result = run_preprocessor(input, filename=filename,
+                                  profile_data=profile_data)
     elif stages == "preprocessor":
-        result = run_preprocessor(input, filename=filename, start=start, profile_data=profile_data)
+        result = run_preprocessor(input, filename=filename, start=start,
+                                  profile_data=profile_data)
     else:
         result = input
 
     if stages is None or stages == "parser":
-        result = run_parser(result, filename=filename, start=start, profile_data=profile_data, trace=trace)
+        result = run_parser(result, filename=filename, start=start,
+                            profile_data=profile_data, trace=trace)
 
     if profile:
         for data in profile_data.values():

@@ -1,7 +1,8 @@
 # Copyright 2013 semantics GmbH
 # Written by Marcus Brinkmann <m.brinkmann@semantics.de>
 
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, division
+from __future__ import absolute_import, unicode_literals
 
 import itertools
 from collections import OrderedDict
@@ -16,15 +17,6 @@ try:
     list(etree.ElementDepthFirstIterator(etree.Element("foo"), ["foo"]))
 except TypeError:
     lxml_no_iter_list = True
-def iter_from_list(root, tags):
-    if lxml_no_iter_list is False:
-        return root.iter(tags)
-
-    def iter_():
-        for el in root.iter():
-            if not tags or el.tag in tags:
-                yield el
-    return iter_()
 
 import sys
 
@@ -50,15 +42,29 @@ try:
 except:
     unichr = chr
 
+
+def iter_from_list(root, tags):
+    if lxml_no_iter_list is False:
+        return root.iter(tags)
+
+    def iter_():
+        for el in root.iter():
+            if not tags or el.tag in tags:
+                yield el
+    return iter_()
+
+
 def tprint(*args, **kwargs):
     kwargs['file'] = sys.stderr
     print(*args, **kwargs)
+
 
 def postprocess_references(root):
     class Anonymous():
         pass
 
-    # Ordered dictionary with keys (group, name) and value a list of ref elements.
+    # Ordered dictionary with keys (group, name) and value a list of
+    # ref elements.
     refs = OrderedDict()
 
     # refs inside references only provide referencable definitions for
@@ -73,7 +79,8 @@ def postprocess_references(root):
             ref_list = refs.setdefault((group, name), [])
             ref_list.append(ref)
 
-    # A dictionary, keyed by group and value is list of ref indexes for each definition.
+    # A dictionary, keyed by group and value is list of ref indexes
+    # for each definition.
     ref_groups = {}
 
     for ref_index, ((group, name), ref_list) in enumerate(refs.items()):
@@ -101,7 +108,7 @@ def postprocess_references(root):
             ref.getparent().replace(ref, fn)
 
     refs_as_list = list(refs.values())
-    
+
     # Now generate the reference definition lists.
     all_references = root.findall(".//references")
     for references in all_references:
@@ -109,7 +116,9 @@ def postprocess_references(root):
         if group not in ref_groups:
             # Delete unused reference groups.
             # FIXME (but only if extra_refs is not empty):
-            # Cite error: <ref> tag defined in <references> has group attribute "$GROUPNAME" which does not appear in prior text.
+            # Cite error: <ref> tag defined in <references> has group
+            # attribute "$GROUPNAME" which does not appear in prior
+            # text.
             references.getparent().remove(references)
             continue
 
@@ -121,17 +130,20 @@ def postprocess_references(root):
         for ref in extra_refs:
             name = ref.get("name")
             if name is None:
-                # FIXME: Cite error: <ref> tag defined in <references> has no name attribute.
+                # FIXME: Cite error: <ref> tag defined in <references>
+                # has no name attribute.
                 continue
             # FIXME: Could check group attribute:
-            # Cite error: <ref> tag in <references> has conflicting group attribute "$GROUPNAME".
+            # Cite error: <ref> tag in <references> has conflicting
+            # group attribute "$GROUPNAME".
             ref_list = extra_defs.setdefault(name, [])
             ref_list.append(ref)
-            
-        # Now we can process all references and build the actual reference list.
+
+        # Now we can process all references and build the actual
+        # reference list.
         refblock = etree.Element("ol")
         refblock.set("class", "references")
-        
+
         for ref_group_index, ref_index in enumerate(ref_group):
             ref_list = refs_as_list[ref_index]
             li = etree.SubElement(refblock, "li")
@@ -141,15 +153,15 @@ def postprocess_references(root):
             if len(ref_list) == 1:
                 link = etree.SubElement(backlinks, "a")
                 link.set("href", "#cite_ref-%d" % (ref_index + 1))
-                link.text = unichr(0x2191) # &uarr;
+                link.text = unichr(0x2191)  # &uarr;
                 link.tail = " "
             else:
-                backlinks.text = unichr(0x2191) + " " # &uarr;
+                backlinks.text = unichr(0x2191) + " "  # &uarr;
                 for sub_index, ref in enumerate(ref_list):
                     sup = etree.SubElement(backlinks, "sup")
                     link = etree.SubElement(sup, "a")
                     link.set("href", "#cite_ref-%d-%d" % (ref_index + 1, sub_index + 1))
-                    link.text = "%d.%d" % (ref_group_index + 1, sub_index) # FIXME: Use a, b, c, ... ?
+                    link.text = "%d.%d" % (ref_group_index + 1, sub_index)  # FIXME: Use a, b, c, ... ?
                     sup.tail = " "
             def_span = etree.SubElement(li, "span")
             def_span.set("class", "reference-text")
@@ -174,7 +186,7 @@ def postprocess_references(root):
         # Commit.
         refblock.tail = references.tail
         references.getparent().replace(references, refblock)
-        
+
 
 def postprocess_toc(root, settings):
     # FIRST make identifiers unique.
@@ -279,7 +291,8 @@ def postprocess_toc(root, settings):
 
         li = etree.SubElement(ul, "li")
         li.tail = "\n"
-        li.set("class", "toclevel-" + str(toclevel) + " tocsection-" + str(tocsection))
+        li.set("class", "toclevel-" + str(toclevel)
+               + " tocsection-" + str(tocsection))
 
         lnk = etree.SubElement(li, "a")
         ident = h_el.get("id", "")
@@ -287,7 +300,7 @@ def postprocess_toc(root, settings):
 
         span1 = etree.SubElement(lnk, "span")
         span1.set("class", "tocnumber")
-        span1.text = tocnumber # + "."
+        span1.text = tocnumber  # + "."
         span1.tail = " "
 
         span2 = etree.SubElement(lnk, "span")
@@ -355,7 +368,6 @@ class SemanticsState(dict):
         else:
             super(SemanticsState, self).__init__()
 
-
     def as_hashable(self):
         def _convert(obj):
             if isinstance(obj, list):
@@ -370,7 +382,7 @@ class SemanticsState(dict):
                     return obj
             else:
                 return obj
-                    
+
         things = [(key, _convert(value)) for key, value in self.items()]
         things = [(key, value) for key, value in things if value is not None]
         if len(things) == 0:
@@ -415,6 +427,7 @@ class SemanticsState(dict):
     def get_list(self, name):
         return self.get(name, [])
 
+
 class SemanticsTracer(object):
     """Wrap a semantics class and add extra trace output for debugging."""
 
@@ -456,12 +469,13 @@ class SemanticsTracer(object):
             return result
         return newfunc
 
+
 class mwSemantics(object):
     # Interface:
     def _get_link_target(self, target):
         target = target.replace(" ", "_")
         return "./wiki/" + target
-    
+
     # Goal: Something like
     # http://www.mediawiki.org/wiki/Parsoid/MediaWiki_DOM_spec
 
@@ -484,7 +498,7 @@ class mwSemantics(object):
 
     def push_no_h6(self, ast):
         with self._state() as state:
-            state.push_to("no", r"======[ \t]*(\n|$)") # use multiline?
+            state.push_to("no", r"======[ \t]*(\n|$)")  # use multiline?
         return ast
 
     def push_no_h5(self, ast):
@@ -555,7 +569,7 @@ class mwSemantics(object):
     def document(self, ast):
         html = etree.Element("html")
         body = etree.SubElement(html, "body")
-        if isinstance (ast, list):
+        if isinstance(ast, list):
             pass
         else:
             body.extend(ast.blocks)
@@ -566,8 +580,10 @@ class mwSemantics(object):
             attrs = el.findall("mw-attr")
             for attr in attrs:
                 # FIXME: This might need some polishing.
-                name = etree.tostring(attr.find("name"), encoding=unicode, method="text")
-                value = etree.tostring(attr.find("value"), encoding=unicode, method="text")
+                name = etree.tostring(attr.find("name"), encoding=unicode,
+                                      method="text")
+                value = etree.tostring(attr.find("value"), encoding=unicode,
+                                       method="text")
                 el.set(name, value)
                 #tail = attr.tail
                 #if tail is not None:
@@ -576,7 +592,9 @@ class mwSemantics(object):
 
         # Strip the level attribute from list items, which was only
         # used in constructing the lists.
-        el_list = html.findall(".//li[@level]") + html.findall(".//dd[@level]") + html.findall(".//dt[@level]")
+        el_list = html.findall(".//li[@level]")
+        el_list += html.findall(".//dd[@level]")
+        el_list += html.findall(".//dt[@level]")
         for el in el_list:
             el.attrib.pop("level")
 
@@ -585,7 +603,7 @@ class mwSemantics(object):
 
         return html
 
-    def _h_el (self, level, ast):
+    def _h_el(self, level, ast):
         el = etree.Element("h" + str(level))
         text = ast.strip()
         #el.set("id", ident)
@@ -593,7 +611,7 @@ class mwSemantics(object):
         span1 = etree.SubElement(el, "span")
         span1.text = text
         ident = etree.tostring(el, encoding=unicode, method="text")
-        span1.set("class", "mw-headline")        
+        span1.set("class", "mw-headline")
         span1.set("id", ident)
 
         span2 = etree.SubElement(el, "span")
@@ -613,7 +631,7 @@ class mwSemantics(object):
         span3.set("class", "mw-editsection-bracket")
         span3.text = "]"
 
-        el.tail = "\n"                  
+        el.tail = "\n"
         return el
 
     def h6(self, ast):
@@ -722,7 +740,7 @@ class mwSemantics(object):
         el = etree.Element("li")
         inline = ast.inline
         if inline is not None:
-            inline = inline + [ "\n" ]
+            inline = inline + ["\n"]
         self._collect_inline(el, inline)
         if "sublists" in ast:
             el.extend(ast.sublists)
@@ -736,14 +754,15 @@ class mwSemantics(object):
             dd = etree.Element("dd")
             content = inline.dd
             if content is not None:
-                content = content + [ "\n" ]
+                content = content + ["\n"]
             self._collect_inline(dd, content)
-            # No sublist allowed in this case.  FIXME: Might need to change to grako-list.
+            # No sublist allowed in this case.  FIXME: Might need to
+            # change to grako-list.
             return [el, dd]
         else:
             inline = ast.inline
             if inline is not None:
-                inline = inline + [ "\n" ]
+                inline = inline + ["\n"]
             self._collect_inline(el, inline)
         if "sublists" in ast:
             el.extend(ast.sublists)
@@ -809,7 +828,7 @@ class mwSemantics(object):
             if ast.rows.first is not None:
                 rows.append(ast.rows.first)
             rows.extend(ast.rows.rest)
-        
+
         el = etree.Element("table")
         if ast.caption is not None:
             el.append(ast.caption)
@@ -849,7 +868,7 @@ class mwSemantics(object):
     def table_header(self, ast):
         el_list = ast.inline + [ast.final]
         # Work around an oddity of grako when dealing with lists of lists.
-        return { 'cells' : el_list }
+        return {'cells': el_list}
 
     def table_header_cell_inline(self, ast):
         el = etree.Element("th")
@@ -874,13 +893,13 @@ class mwSemantics(object):
                 el.text = el.text.rstrip()
         else:
             el.extend(blocks)
-        
+
     def _table_cell(self, el, ast):
         if ast.content is not None:
             self._collect_blocks(el, ast.content.blocks)
         self._set_attributes(el, ast.attribs)
         return el
-        
+
     def table_header_cell(self, ast):
         el = etree.Element("th")
         return self._table_cell(el, ast)
@@ -889,7 +908,7 @@ class mwSemantics(object):
         if ast.final is not None:
             el_list = ast.inline + [ast.final]
         # Work around an oddity of grako when dealing with lists of lists.
-        return { 'cells' : el_list }
+        return {'cells': el_list}
 
     def table_data_cell_inline(self, ast):
         el = etree.Element("td")
@@ -987,7 +1006,7 @@ class mwSemantics(object):
     def paragraph_only_br(self, ast):
         el = etree.Element("br")
         el.tail = "\n"
-        return AST({ "content": [ el ] })
+        return AST({"content": [el]})
 
     def paragraph_br(self, ast):
         el = etree.Element("br")
@@ -997,9 +1016,12 @@ class mwSemantics(object):
     def internal_link(self, ast):
         el = etree.Element("a")
         try:
-            # FIXME: target could be arbitrary complicated, need to extract the text from the XML representation.
-            # Maybe just move that stuff into an element, and process it with XSL text() later.
-            # THIS CAN FAIL AT RUNTIME IF NOT ALL CHILD ELEMENTS ARE STRING(ABLE)!
+            # FIXME: target could be arbitrary complicated, need to
+            # extract the text from the XML representation.
+            # Maybe just move that stuff into an element, and process
+            # it with XSL text() later.
+            # THIS CAN FAIL AT RUNTIME IF NOT ALL CHILD ELEMENTS ARE
+            # STRING(ABLE)!
             target = "".join(ast.target).strip()
         except:
             target = "BROKEN"
@@ -1103,7 +1125,7 @@ class mwSemantics(object):
         if el.tag == "ref" or el.tag == "references":
             whitelist = frozenset(["name", "group"])
         else:
-            whitelist = attribute_whitelist(el.tag) 
+            whitelist = attribute_whitelist(el.tag)
         for attrib in attribs:
             name = attrib.name.lower()
             value = attrib.value
@@ -1171,7 +1193,7 @@ class mwSemantics(object):
             el.text = "".join(ast.content)
         self._set_attributes(el, ast.attribs)
         return el
-        
+
     def ref(self, ast):
         el = etree.Element(ast.name.lower())
         if ast.content is not None:
@@ -1230,7 +1252,8 @@ class mwSemantics(object):
     def html_list_item(self, ast):
         el = etree.Element(ast.name.lower())
         if ast.content is not None:
-            # FIXME: Unwrap inital p (see test "HTML nested bullet list, closed tags (bug 5497)")
+            # FIXME: Unwrap inital p (see test "HTML nested bullet
+            # list, closed tags (bug 5497)")
             # FIXME: Also do the unwrapping in other places, such as:
             # dl_item, table cells, ...
             self._collect_blocks(el, ast.content.blocks)
@@ -1250,4 +1273,3 @@ class mwSemantics(object):
             self._collect_blocks(el, ast.content.blocks)
         self._set_attributes(el, ast.attribs)
         return el
-

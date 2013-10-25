@@ -17,7 +17,7 @@ setup_info = dict(
     namespace_packages=["smc"],
     zip_safe=True,
     requires=["lxml", "grako"],
-    entry_points = {
+    entry_points={
         'console_scripts': [
             'mw = smc.mw.tool:main',
         ]

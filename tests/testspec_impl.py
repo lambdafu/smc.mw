@@ -2,11 +2,13 @@
 # Copyright 2013 semantics GmbH
 # Written by Marcus Brinkmann <m.brinkmann@semantics.de>
 
-from __future__ import print_function, division, absolute_import, unicode_literals
+from __future__ import print_function, division
+from __future__ import absolute_import, unicode_literals
 
 import sys
 
 from testspec import testspecParser as TestspecParser
+
 
 class TestspecSemantics(object):
     def document(self, ast):
@@ -30,6 +32,7 @@ class TestspecSemantics(object):
         # Always remove the last newline.
         return "".join(ast)[:-1]
 
+
 def load(fp):
     text = fp.read()
     if sys.version < '3':
@@ -37,6 +40,7 @@ def load(fp):
     parser = TestspecParser(parseinfo=False)
     ast = parser.parse(text, "document", semantics=TestspecSemantics())
     return ast
+
 
 def main(filename, startrule, trace=False):
     import json
@@ -47,10 +51,12 @@ def main(filename, startrule, trace=False):
         with my_open(filename, encoding="utf-8") as f:
             text = f.read()
     parser = TestspecParser(parseinfo=False)
-    ast = parser.parse(text, startrule, filename=filename, trace=trace, semantics=TestspecSemantics())
+    ast = parser.parse(text, startrule, filename=filename, trace=trace,
+                       semantics=TestspecSemantics())
     print('JSON:')
     print(json.dumps(ast, indent=2))
     print()
+
 
 if __name__ == '__main__':
     import argparse

@@ -2,7 +2,8 @@
 # Copyright 2013 semantics GmbH
 # Written by Marcus Brinkmann <m.brinkmann@semantics.de>
 
-from __future__ import print_function, division, absolute_import, unicode_literals
+from __future__ import print_function, division
+from __future__ import absolute_import, unicode_literals
 
 import sys
 import codecs
@@ -34,6 +35,13 @@ try:
     list(etree.ElementDepthFirstIterator(etree.Element("foo"), ["foo"]))
 except TypeError:
     lxml_no_iter_list = True
+
+from smc import mw
+from mytidylib import tidy_fragment as tidy
+
+import testspec_impl as testspec
+
+
 def iter_from_list(root, tags):
     if lxml_no_iter_list is False:
         return root.iter(tags)
@@ -44,10 +52,6 @@ def iter_from_list(root, tags):
                 yield el
     return iter_()
 
-from smc import mw
-from mytidylib import tidy_fragment as tidy
-
-import testspec_impl as testspec
 
 class TestPreprocessor(mw.Preprocessor):
     def __init__(self, *args, **kwargs):
@@ -63,16 +67,18 @@ class TestPreprocessor(mw.Preprocessor):
         tmpl = self.templates.get((namespace.prefix, pagename), None)
         return tmpl
 
+
 class TestSemantics(mw.Semantics):
     def _get_link_target(self, target):
         target = target.replace(" ", "_")
         return "/wiki/" + target
-        
+
+
 def profiled(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         name = fn.__name__
-        prof_data = { "stage" : name }
+        prof_data = {"stage": name}
         # args[0] = self, args[1] = result
         input = args[1]
         if isinstance(input, str) or isinstance(input, unicode):
@@ -95,6 +101,7 @@ def profiled(fn):
         return result[0]
     return wrapper
 
+
 def clean_expect(expect):
     body = html.fragment_fromstring(expect, create_parent=True)
     # Clear edit link from header sections for now.
@@ -109,7 +116,7 @@ def clean_expect(expect):
             el.attrib.pop("class")
             del el.attrib["title"]
             href = el.get("href")
-            href = href[17:-22].lower()            
+            href = href[17:-22].lower()
             # "/index.php?title=A&action=edit&redlink=1"
             el.set("href", "./wiki/" + href)
 
@@ -127,8 +134,10 @@ def clean_expect(expect):
     text = text.replace(unichr(160) + r":", " :")
     return text
 
+
 def clean_output(output):
     return output
+
 
 def tidy_equal(output, expect):
     expect = clean_expect(expect)
@@ -136,6 +145,7 @@ def tidy_equal(output, expect):
     t1 = tidy(expect)[0]
     t2 = tidy(output)[0]
     return t1 == t2
+
 
 class Test(object):
     # index: running count in the input file
@@ -151,7 +161,7 @@ class Test(object):
     # profile = OrderedDict with keys: "stage", "time", "size"
     # output = actual output
     def __init__(self, data, preprocessor=None):
-        if preprocessor == None:
+        if preprocessor is None:
             self._preprocessor = mw.Preprocessor()
         else:
             self._preprocessor = preprocessor
@@ -187,7 +197,8 @@ class Test(object):
     @profiled
     def parser(self, inp, profile_data=None):
         parser = mw.Parser(parseinfo=False)
-        ast = parser.parse(inp, "document", semantics=TestSemantics(parser), trace=False)
+        ast = parser.parse(inp, "document", semantics=TestSemantics(parser),
+                           trace=False)
         body = ast[0]
         if body.text is not None:
             text = body.text
@@ -212,7 +223,7 @@ class Test(object):
         else:
             if tidy_equal(output, self.result):
                 self.status = "tidy"
-            else:       
+            else:
                 self.status = "fail"
         return self.status
 
@@ -224,8 +235,9 @@ class Test(object):
         del data["_preprocessor"]
         return data
 
+
 def main(default_dir, output_file, filter=None):
-    directory=default_dir
+    directory = default_dir
     files = os.listdir(directory)
     files.sort()
 
@@ -271,6 +283,7 @@ def main(default_dir, output_file, filter=None):
 
     with open(output_file, "w") as fh:
         json.dump(tests, fh, indent=2)
+
 
 if __name__ == "__main__":
     test_dir = os.path.dirname(__file__)

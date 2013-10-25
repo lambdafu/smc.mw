@@ -6,14 +6,16 @@ from __future__ import print_function, absolute_import, division
 import re
 
 MSGCAT = {
-    "toc": { "en": "Contents",
-             "de": "Inhaltsverzeichnis" },
-    }
+    "toc": {"en": "Contents",
+            "de": "Inhaltsverzeichnis"},
+}
+
 
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):
         super(AttrDict, self).__init__(*args, **kwargs)
         self.__dict__ = self
+
 
 class Namespace(AttrDict):
     def canonical_name(self, lang):
@@ -22,55 +24,56 @@ class Namespace(AttrDict):
     def __repr__(self):
         return "Namespace<" + self.name.get("en", "(Main)") + ">"
 
+
 default_namespaces = [
-    { "prefix": "",
-      "ident": 0,
-      "name": {} },
+    {"prefix": "",
+     "ident": 0,
+     "name": {}},
 
-    { "prefix": "talk",
-      "ident": 1,
-      "name": { "en": "Talk",
-                "de": "Diskussion" }},
+    {"prefix": "talk",
+     "ident": 1,
+     "name": {"en": "Talk",
+              "de": "Diskussion"}},
 
-    { "prefix": "user",
-      "ident": 2,
-      "name": { "en": "User",
-                "de": "Benutzer" }},
+    {"prefix": "user",
+     "ident": 2,
+     "name": {"en": "User",
+              "de": "Benutzer"}},
 
-    { "prefix": "project talk",
-      "ident": 3,
-      "name": { "en": "User talk",
-                "de": "Benutzer Diskussion" }},
+    {"prefix": "project talk",
+     "ident": 3,
+     "name": {"en": "User talk",
+              "de": "Benutzer Diskussion"}},
 
-    { "prefix": "project",
-      "ident": 4,
-      "name": { "en": "Project",
-                "de": "Wikipedia" }},
+    {"prefix": "project",
+     "ident": 4,
+     "name": {"en": "Project",
+              "de": "Wikipedia"}},
 
-    { "prefix": "project talk",
-      "ident": 5,
-      "name": { "en": "Project talk",
-                "de": "Wikipedia Diskussion" }},
+    {"prefix": "project talk",
+     "ident": 5,
+     "name": {"en": "Project talk",
+              "de": "Wikipedia Diskussion"}},
 
-    { "prefix": "template",
-      "ident": 10,
-      "name": { "en": "Template",
-                "de": "Vorlage" }},
+    {"prefix": "template",
+     "ident": 10,
+     "name": {"en": "Template",
+              "de": "Vorlage"}},
 
-    { "prefix": "template talk",
-      "ident": 11,
-      "name": { "en": "Template talk",
-                "de": "Vorlage Diskussion" }},
+    {"prefix": "template talk",
+     "ident": 11,
+     "name": {"en": "Template talk",
+              "de": "Vorlage Diskussion"}},
 
-    { "prefix": "help",
-      "ident": 12,
-      "name": { "en": "Help",
-                "de": "Hilfe" }},
+    {"prefix": "help",
+     "ident": 12,
+     "name": {"en": "Help",
+              "de": "Hilfe"}},
 
-    { "prefix": "help talk",
-      "ident": 13,
-      "name": { "en": "Help talk",
-                "de": "Hilfe Diskussion" }}
+    {"prefix": "help talk",
+     "ident": 13,
+     "name": {"en": "Help talk",
+              "de": "Hilfe Diskussion"}}
 ]
 
 
@@ -88,7 +91,7 @@ class Namespaces(object):
         if lang != "en":
             self._by_loc_name = dict([(ns.name[lang].lower(), ns)
                                       for ns in namespaces if lang in ns.name])
-            
+
     def find(self, namespace, allow_ids=True):
         ns = None
         if allow_ids is True:
@@ -121,11 +124,13 @@ class Namespaces(object):
 
 whitespace_re = re.compile("\s+")
 
+
 class Settings(object):
     def __init__(self, lang="en"):
         self.language = lang
         self.capital_links = True
-        self.namespaces = Namespaces([Namespace(ns) for ns in default_namespaces], lang=lang)
+        self.namespaces = Namespaces([Namespace(ns)
+                                      for ns in default_namespaces], lang=lang)
         self.msgcat = MSGCAT
 
     def canonical_page_name(self, name, default_namespace=""):

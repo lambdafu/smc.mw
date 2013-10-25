@@ -1,7 +1,8 @@
 # Copyright 2013 semantics GmbH
 # Written by Marcus Brinkmann <m.brinkmann@semantics.de>
 
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, division
+from __future__ import absolute_import, unicode_literals
 
 import itertools
 from collections import OrderedDict
@@ -22,6 +23,7 @@ try:
     basestring
 except:
     basestring = str
+
 
 class ParserFuncArguments(object):
     def __init__(self, parent, first, args):
@@ -93,7 +95,7 @@ class mw_preSemantics(object):
             text_el = etree.Element("text")
             text_el.text = pending_text
             container.append(text_el)
-                
+
     def document(self, ast):
         body = etree.Element("body")
         self._collect_elements(body, ast.elements)
@@ -170,7 +172,8 @@ class mw_preSemantics(object):
 
 class PreprocessorFrame(object):
     def __init__(self, context, title, text, include=False, parent=None,
-                 named_arguments=None, unnamed_arguments=None, call_stack=None):
+                 named_arguments=None, unnamed_arguments=None,
+                 call_stack=None):
         parser = context.parser
         semantics = context.semantics
         dom = parser.parse(text, "document", semantics=semantics, trace=False,
@@ -210,7 +213,7 @@ class PreprocessorFrame(object):
         if index < 1 or index > len(unnamed_arguments):
             return None, False
         return unnamed_arguments[index - 1], False
-    
+
     def has_argument(self, name):
         node, _ = self._get_argument_node(name)
         return node is not None
@@ -250,20 +253,23 @@ class PreprocessorFrame(object):
 
         colon = name.find(":")
         if colon >= 0:
-            # QUIRK: We have to keep the order of named and unnamed arguments (i.e. for #switch).
-            args = ParserFuncArguments(self, name[colon + 1:].strip(), list(el.iterchildren("tplarg")))
+            # QUIRK: We have to keep the order of named and unnamed
+            # arguments (i.e. for #switch).
+            args = ParserFuncArguments(self, name[colon + 1:].strip(),
+                                       list(el.iterchildren("tplarg")))
             parser_func = self.context.expand_parser_func(name[:colon], args)
             if parser_func is not None:
                 return parser_func
 
-        template_ns = self.context.settings.namespaces.find("template")
-        namespace, pagename = self.context.settings.canonical_page_name(name, default_namespace=template_ns)
+        settings = self.context.settings
+        template_ns = settings.namespaces.find("template")
+        namespace, pagename = settings.canonical_page_name(name, default_namespace=template_ns)
         template = self.context.get_template(namespace, pagename)
         if template is None:
             # FIXME.
-            return "[[" + self.context.settings.expand_page_name(namespace, pagename) + "]]"
+            return "[[" + settings.expand_page_name(namespace, pagename) + "]]"
 
-        named_arguments = { }
+        named_arguments = {}
         unnamed_arguments = []
         arg_els = el.iterchildren("tplarg")
         unnamed_index = 0
@@ -350,11 +356,12 @@ class PreprocessorFrame(object):
                 while True:
                     new_event, new_el = next(iterator)
                     if new_el == el and new_event == "end":
-                         break
+                        break
                 if el.tail:
                     output = output + el.tail
 
         return output
+
 
 class Preprocessor(object):
     def __init__(self, settings=None):
@@ -493,7 +500,7 @@ class Preprocessor(object):
         elif name == "uc":
             return first_arg.upper()
         elif name == "ucfirst":
-            return first_arg[:1].upper() + first_arg[1:]            
+            return first_arg[:1].upper() + first_arg[1:]
         elif name == "#ifeq":
             def canonicalize_arg(arg):
                 try:
@@ -528,7 +535,8 @@ class Preprocessor(object):
             # True if we have seen #default and wait for the next key=value.
             pending_default = False
             # The default value seen.
-            # QUIRK: For #default, last match wins (unless first_arg is "#default").
+            # QUIRK: For #default, last match wins (unless first_arg
+            # is "#default").
             default = None
             for arg in range(1, args_cnt):
                 name = args.get_name(arg)

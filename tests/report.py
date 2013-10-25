@@ -2,7 +2,8 @@
 # Copyright 2013 semantics GmbH
 # Written by Marcus Brinkmann <m.brinkmann@semantics.de>
 
-from __future__ import print_function, division, absolute_import, unicode_literals
+from __future__ import print_function, division
+from __future__ import absolute_import, unicode_literals
 
 import sys
 import argparse
@@ -17,12 +18,14 @@ try:
 except:
     unicode = str
 
+
 def jquery_show(what=None):
     show_all = '$("table.tests > tbody > tr").show();'
     if what is None:
         return show_all
     else:
         return show_all + '$("table.tests > tbody > tr:not(.' + what + ')").hide();'
+
 
 class TestGroup(object):
     def __init__(self, test_group):
@@ -44,6 +47,7 @@ class TestGroup(object):
         times = [sum(stage["time"] for stage in test["profile"].values()) for test in self.test_group["results"]]
         return sum(times)
 
+
 def _repr_test(test):
     def _convert(val):
         if isinstance(val, list):
@@ -53,6 +57,7 @@ def _repr_test(test):
     return frozenset([("input", test["input"]),
                       ("description", test["description"]),
                       ("options", options)])
+
 
 class TestGroupCmp(object):
     def __init__(self, old_group, new_group):
@@ -79,8 +84,9 @@ class TestGroupCmp(object):
 def append_code(el, code):
     code_el = etree.SubElement(el, "pre")
     lines = code.split("\n")
-    code = "\u231e\n".join(lines) #21b2 2424 2319/2310 21a9 2199
+    code = "\u231e\n".join(lines)  # alternative: 21b2 2424 2319/2310 21a9 2199
     code_el.text = code
+
 
 def html_report(tests, old_tests=None):
     tests = list(map(TestGroup, tests))
@@ -149,7 +155,7 @@ def html_report(tests, old_tests=None):
         header_total_minus_button.text = "-"
         # header_total_minus_button.set("onclick", jquery_show("to_none"))
         header_total_minus_button.set("disabled", "")
-        
+
         header_pass_plus = etree.SubElement(header2, "th")
         header_pass_plus_button = etree.SubElement(header_pass_plus, "button")
         header_pass_plus_button.text = "+"
@@ -279,7 +285,6 @@ def html_report(tests, old_tests=None):
                     if fail_minus_nr != 0:
                         fail_minus.text = "{nr:+}".format(nr=-fail_minus_nr)
 
-                
     for test_group in tests:
         if old_tests and test_group.filename in old_tests:
             old_group = old_tests[test_group.filename]
@@ -351,7 +356,7 @@ def html_report(tests, old_tests=None):
                 ul = etree.SubElement(description, "ul")
                 for key, val in test["options"].items():
                     li = etree.SubElement(ul, "li")
-                    if val == True:
+                    if val is True:
                         li.text = key
                     elif isinstance(val, list):
                         li.text = key + ": " + ", ".join(val)
@@ -371,8 +376,10 @@ def html_report(tests, old_tests=None):
             else:
                 output.text = " "
     with open("out/report.html", "wb") as fh:
-        res = etree.tostring(html, pretty_print=True, doctype="<!DOCTYPE html>", method="html")
+        res = etree.tostring(html, pretty_print=True,
+                             doctype="<!DOCTYPE html>", method="html")
         fh.write(res)
+
 
 def performance_report(tests):
     import matplotlib.pyplot as plt
@@ -408,14 +415,23 @@ def performance_report(tests):
 
     width = 1
 
-    p0 = plt.bar(x, times[:,0] * status[:,0], width=width, color="#ccee88", linewidth=0, log=True)
-    p1 = plt.bar(x, times[:,1] * status[:,0], bottom=times[:,0] * status[:,0], width=width, color="#99dd66", linewidth=0, log=True)
+    p0 = plt.bar(x, times[:, 0] * status[:, 0], width=width, color="#ccee88",
+                 linewidth=0, log=True)
+    p1 = plt.bar(x, times[:, 1] * status[:, 0],
+                 bottom=times[:, 0] * status[:, 0],
+                 width=width, color="#99dd66", linewidth=0, log=True)
 
-    p2 = plt.bar(x, times[:,0] * status[:,1], width=width, color="#ccee88", linewidth=0, log=True)
-    p3 = plt.bar(x, times[:,1] * status[:,1], bottom=times[:,0] * status[:,1], width=width, color="#99dd66", linewidth=0, log=True)
+    p2 = plt.bar(x, times[:, 0] * status[:, 1], width=width, color="#ccee88",
+                 linewidth=0, log=True)
+    p3 = plt.bar(x, times[:, 1] * status[:, 1],
+                 bottom=times[:, 0] * status[:, 1],
+                 width=width, color="#99dd66", linewidth=0, log=True)
 
-    p4 = plt.bar(x, times[:,0] * status[:,2], width=width, color="#eecc88", linewidth=0, log=True)
-    p5 = plt.bar(x, times[:,1] * status[:,2], bottom=times[:,0] * status[:,2], width=width, color="#dd9966", linewidth=0, log=True)
+    p4 = plt.bar(x, times[:, 0] * status[:, 2], width=width, color="#eecc88",
+                 linewidth=0, log=True)
+    p5 = plt.bar(x, times[:, 1] * status[:, 2],
+                 bottom=times[:, 0] * status[:, 2],
+                 width=width, color="#dd9966", linewidth=0, log=True)
 
     legend = [p0[0], p1[0], p2[0], p3[0]]
     legend_text = ["Preprocessor/msec", "Parser/msec", "Preprocessor/msec (fail)", "Parser/msec (fail)"]
@@ -423,7 +439,7 @@ def performance_report(tests):
     plt.xlim(0, cnt)
     plt.legend(legend, legend_text)
     plt.show()
-    
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Generate a test report.")
@@ -433,6 +449,7 @@ def parse_args():
     parser.add_argument("input", metavar="FILE",
                         help="report.dat file to process")
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
