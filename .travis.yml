@@ -18,6 +18,6 @@ install:
   - pip install -q lxml==$LXML_VERSION --use-mirrors
   - pip install -q .
 script:
-  COVERAGE_FILE=../.coverage make -C tests COVERAGE="coverage run --source=smc"
+  COVERAGE_FILE=../.coverage make -C tests COVERAGE="coverage run --source=../smc"
 after_success:
   coveralls
