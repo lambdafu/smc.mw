@@ -8,6 +8,10 @@ Current status:
 .. image:: https://travis-ci.org/lambdafu/smc.mw.png
    :target: http://travis-ci.org/lambdafu/smc.mw
 
+.. image:: https://coveralls.io/repos/lambdafu/smc.mw/badge.png?branch=master
+  :target: https://coveralls.io/r/lambdafu/smc.mw?branch=master
+
+
 Using
 =====
 

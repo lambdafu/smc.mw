@@ -15,10 +15,10 @@ realclean: clean
 	rm -f out/report-*.dat
 
 out/report.dat: data/*.txt
-	$(COVERAGE) mwtests.py
+	PYTHONPATH=.. $(COVERAGE) mwtests.py
 
 out/report.html: report.py out/report.dat
-	$(PYTHON) report.py $(if $(old_report), --old-input=$(old_report)) out/report.dat
+	PYTHONPATH=.. $(PYTHON) report.py $(if $(old_report), --old-input=$(old_report)) out/report.dat
 
 commit: out/report.html
 	cp out/report.dat out/report-`date -Iseconds`.dat
