@@ -3,6 +3,9 @@
 
 old_report = $(lastword $(sort $(wildcard out/report-*.dat)))
 
+PYTHON=python
+COVERAGE=$(PYTHON)
+
 all: out/report.html
 
 clean:
@@ -12,10 +15,10 @@ realclean: clean
 	rm -f out/report-*.dat
 
 out/report.dat: data/*.txt
-	python mwtests.py
+	$(COVERAGE) mwtests.py
 
 out/report.html: report.py out/report.dat
-	python report.py $(if $(old_report), --old-input=$(old_report)) out/report.dat
+	$(PYTHON) report.py $(if $(old_report), --old-input=$(old_report)) out/report.dat
 
 commit: out/report.html
 	cp out/report.dat out/report-`date -Iseconds`.dat
