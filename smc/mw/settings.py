@@ -133,6 +133,13 @@ class Settings(object):
                                       for ns in default_namespaces], lang=lang)
         self.msgcat = MSGCAT
 
+        # wgMaxTocLevel.  This is the maximum heading level that is
+        # included in the TOC, assuming that the first heading is h2
+        # (h1 is reserved for the page title) and no heading level is
+        # skipped.  In other words, a max_toc_level of 3 means the
+        # first two heading levels are included in the TOC.
+        self.max_toc_level = 999
+
     def canonical_page_name(self, name, default_namespace=""):
         """Return the namespace (or None) and the canonical page name."""
         namespace = None

@@ -4,6 +4,14 @@
 from __future__ import print_function, absolute_import, division
 
 import re
+from bisect import bisect_left
+from lxml import etree
+try:
+    lxml_no_iter_list = False
+    list(etree.ElementDepthFirstIterator(etree.Element("foo"), ["foo"]))
+except TypeError:
+    lxml_no_iter_list = True
+
 
 try:
     unichr(65)
@@ -413,3 +421,59 @@ def css_filter(style):
 
 def escape_id(id):
     return id
+
+
+def iter_from_list(root, tags):
+    if lxml_no_iter_list is False:
+        return root.iter(tags)
+
+    def iter_():
+        for el in root.iter():
+            if not tags or el.tag in tags:
+                yield el
+    return iter_()
+
+
+ITER_PUSH = 0
+ITER_POP = 1
+ITER_ADD = 2
+
+
+def iter_structure(root):
+    # Iterate over the headings, returning also the structure.
+    headings = iter_from_list(root, ["h1", "h2", "h3", "h4", "h5", "h6"])
+    headings = list(headings)
+
+    # A stack of toc numbers for the previous element and its ancestors.
+    toc_nrs = []
+    # A stack of levels for the previous element and its ancestors.
+    levels = []
+
+    for h_el in headings:
+        level = int(h_el.tag[1])
+        # Find the appropriate insertion point.  If levels are
+        # skipped, all intermediate levels are treated as if they were
+        # at that level.
+        pos = bisect_left(levels, level)
+        pop_levels = levels[pos:]
+        push_level = (len(pop_levels) == 0)
+
+        # Refresh levels and toc_nrs.
+        levels = levels[:pos] + [level]
+        if push_level:
+            # FIXME: Could store last h_el and pass it here.
+            yield (ITER_PUSH, toc_nrs[:], None)
+            toc_nrs.append(1)
+        else:
+            # We pop one less than pop_levels, as there is no pop for
+            # leave nodes.
+            for idx in range(1, len(pop_levels)):
+                yield (ITER_POP, toc_nrs[:-idx], None)
+            toc_nrs = toc_nrs[:pos] + [toc_nrs[pos] + 1]
+
+        # We copy the toc_nrs, so the caller can convert the generator
+        # output to a list.
+        yield (ITER_ADD, toc_nrs[:], h_el)
+    
+    for idx in range(1, len(toc_nrs) + 1):
+        yield (ITER_POP,  toc_nrs[:-idx], None)

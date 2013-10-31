@@ -8,15 +8,9 @@ import itertools
 from collections import OrderedDict
 import re
 from copy import deepcopy
-from bisect import bisect_left
 from contextlib import contextmanager
 
 from lxml import etree
-try:
-    lxml_no_iter_list = False
-    list(etree.ElementDepthFirstIterator(etree.Element("foo"), ["foo"]))
-except TypeError:
-    lxml_no_iter_list = True
 
 import sys
 
@@ -25,6 +19,7 @@ from grako.ast import AST
 
 from . mw import mwParser as Parser
 from . html import entity_by_name, attribute_whitelist, css_filter, escape_id
+from . html import ITER_PUSH, ITER_POP, ITER_ADD, iter_structure
 from . settings import Settings
 
 try:
@@ -41,17 +36,6 @@ try:
     unichr(65)
 except:
     unichr = chr
-
-
-def iter_from_list(root, tags):
-    if lxml_no_iter_list is False:
-        return root.iter(tags)
-
-    def iter_():
-        for el in root.iter():
-            if not tags or el.tag in tags:
-                yield el
-    return iter_()
 
 
 def tprint(*args, **kwargs):
@@ -188,22 +172,24 @@ def postprocess_references(root):
         references.getparent().replace(references, refblock)
 
 
+# FIXME: No edit links in preview mode.
+## preprocesor: Insert a heading marker only for <h> children of <root>
+## This is to stop extractSections from going over multiple tree levels
 def postprocess_toc(root, settings):
-    # FIRST make identifiers unique.
-    ids = {}
-    # headings = root.iter(["h1", "h2", "h3", "h4", "h5", "h6"])
-    headings = iter_from_list(root, ["h1", "h2", "h3", "h4", "h5", "h6"])
-    headings = list(headings)
+    structure = list(iter_structure(root))
 
-    for el in headings:
-        span = el[0]
-        ident = span.get("id")
-        if ident in ids:
-            nr = ids[ident] + 1
-            ids[ident] = nr
-            span.set("id", ident + "_" + str(nr))
-        else:
-            ids[ident] = 1
+    # Make identifiers unique.
+    ids = {}
+    for action, toc_nrs, el in structure:
+        if action == ITER_ADD:
+            span = el[0]
+            ident = span.get("id")
+            if ident in ids:
+                nr = ids[ident] + 1
+                ids[ident] = nr
+                span.set("id", ident + "_" + str(nr))
+            else:
+                ids[ident] = 1
 
     # Get forcetoc flag.
     forcetoc = root.findall(".//forcetoc")
@@ -249,79 +235,66 @@ def postprocess_toc(root, settings):
     ident_nr = 0
     # Current container for next ul (starts with div, is li later).
     cur_el = toc_block
-    # A stack of sibling toc numbers.
-    toc_nrs = []
-    # A stack of sibling levels.
-    levels = []
 
-    first_h_el = None
-    for h_el in headings:
-        if first_h_el is None:
-            first_h_el = h_el
+    # max_toc_level assumes starting with h2.
+    max_toc_level = settings.max_toc_level - 1
 
-        level = int(h_el.tag[1])
-        # Find the appropriate insertion point.
-        pos = bisect_left(levels, level)
-        undo_levels = levels[pos:]
-        if len(undo_levels) == 0:
-            new_sublist = True
-        else:
-            new_sublist = False
-        levels = levels[:pos] + [level]
-        if new_sublist:
-            toc_nrs.append(1)
-        else:
-            toc_nrs = toc_nrs[:pos] + [toc_nrs[pos] + 1]
-            for _ in range(len(undo_levels) - 1):
-                cur_el = cur_el.getparent().getparent()
-
-        if new_sublist:
+    for action, toc_nrs, h_el in structure:
+        if action == ITER_PUSH:
+            if len(toc_nrs) >= max_toc_level:
+                continue
             ul = etree.SubElement(cur_el, "ul")
             ul.text = "\n"
             if cur_el.tag == "li":
                 # Note that cur_el[0].tag == 'a'.
                 cur_el[0].tail = "\n"
-        else:
-            ul = cur_el.getparent()
+            cur_el = ul
+        elif action == ITER_POP:
+            if len(toc_nrs) >= max_toc_level:
+                continue
+            # At this point, cur_el.tag == "li".
+            cur_el = cur_el.getparent().getparent()
+        elif action == ITER_ADD:
+            if len(toc_nrs) > max_toc_level:
+                continue
+            if toc_nrs[-1] == 1:
+                ul = cur_el
+            else:
+                # At this point, cur_el.tag == "li".
+                ul = cur_el.getparent()
 
-        toclevel = len(toc_nrs)
-        ident_nr = ident_nr + 1
-        tocsection = ident_nr
-        tocnumber = ".".join(map(str, toc_nrs))
+            toclevel = len(toc_nrs)
+            ident_nr = ident_nr + 1
+            tocsection = ident_nr
+            tocnumber = ".".join(map(str, toc_nrs))
 
-        li = etree.SubElement(ul, "li")
-        li.tail = "\n"
-        li.set("class", "toclevel-" + str(toclevel)
-               + " tocsection-" + str(tocsection))
+            li = etree.SubElement(ul, "li")
+            li.tail = "\n"
+            li.set("class", "toclevel-" + str(toclevel)
+                   + " tocsection-" + str(tocsection))
 
-        lnk = etree.SubElement(li, "a")
-        ident = h_el.get("id", "")
-        lnk.set("href", "#" + ident)
+            #h_el.set("data-toclevel", str(toclevel))
+            #h_el.set("data-tocsection", str(tocsection))
+            #h_el.set("data-tocnumber", str(tocnumber))
 
-        span1 = etree.SubElement(lnk, "span")
-        span1.set("class", "tocnumber")
-        span1.text = tocnumber  # + "."
-        span1.tail = " "
+            lnk = etree.SubElement(li, "a")
+            ident = h_el.get("id", "")
+            lnk.set("href", "#" + ident)
 
-        span2 = etree.SubElement(lnk, "span")
-        span2.set("class", "toctext")
-        # Copy all formatting of the header.
-        span2.text = h_el.text
-        span2.extend(deepcopy(h_el))
+            span1 = etree.SubElement(lnk, "span")
+            span1.set("class", "tocnumber")
+            span1.text = tocnumber  # + "."
+            span1.tail = " "
 
-        cur_el = li
+            span2 = etree.SubElement(lnk, "span")
+            span2.set("class", "toctext")
+            # Copy all formatting of the header.
+            span2.text = h_el.text
+            span2.extend(deepcopy(h_el))
 
-        #h_el.set("data-toclevel", str(toclevel))
-        #h_el.set("data-tocsection", str(tocsection))
-        #h_el.set("data-tocnumber", str(tocnumber))
+            cur_el = li
 
-    #if len(toc_nrs) == 0:
-    #    nr_top = 0
-    #else:
-    #    nr_top = toc_nrs[0]
-
-    # FIXME: Can be configurable.
-    #min_top = 3
+    # FIXME: Could be configurable (it's hard-coded in MediaWiki)
     min_toc = 4
 
     if ident_nr == 0 or (toc is None and not forcetoc and ident_nr < min_toc):
@@ -329,6 +302,13 @@ def postprocess_toc(root, settings):
         if toc is not None:
             toc.getparent().remove(toc)
         return
+
+    # Locate the place for the TOC.
+    first_h_el = None
+    for action, toc_nrs, h_el in structure:
+        if action == ITER_ADD:
+            first_h_el = h_el
+            break
 
     if toc is not None:
         toc_block.tail = toc.tail
