@@ -52,11 +52,18 @@ def iter_from_list(root, tags):
                 yield el
     return iter_()
 
+class TestSettings(mw.Settings):
+    def __init__(self, *args, **kwargs):
+        super(TestSettings, self).__init__(*args, **kwargs)
+        self.templates = {}
+
+    def test_page_exists(self, name):
+        return (name[0].prefix, name[1]) in self.templates
+
 
 class TestPreprocessor(mw.Preprocessor):
     def __init__(self, *args, **kwargs):
         super(TestPreprocessor, self).__init__(*args, **kwargs)
-        self.templates = {}
 
     def get_time(self, utc=False):
         return datetime.datetime(1970, 1, 1, 0, 2)
@@ -64,15 +71,12 @@ class TestPreprocessor(mw.Preprocessor):
     def get_template(self, namespace, pagename):
         if namespace.prefix != "template":
             return None
-        tmpl = self.templates.get((namespace.prefix, pagename), None)
+        tmpl = self.settings.templates.get((namespace.prefix, pagename), None)
         return tmpl
 
 
 class TestSemantics(mw.Semantics):
-    def _get_link_target(self, target):
-        target = target.replace(" ", "_")
-        return "/wiki/" + target
-
+    pass
 
 def profiled(fn):
     @wraps(fn)
@@ -104,21 +108,6 @@ def profiled(fn):
 
 def clean_expect(expect):
     body = html.fragment_fromstring(expect, create_parent=True)
-    # Clear edit link from header sections for now.
-    for el in iter_from_list(body, ["h1", "h2", "h3", "h4", "h5", "h6"]):
-        for subel in el.iterdescendants("a"):
-            subel.set("href", "")
-
-    # Clear red wiki links.
-    for el in body.iter("a"):
-        cls = el.get("class", None)
-        if cls == "new":
-            el.attrib.pop("class")
-            del el.attrib["title"]
-            href = el.get("href")
-            href = href[17:-22].lower()
-            # "/index.php?title=A&action=edit&redlink=1"
-            el.set("href", "./wiki/" + href)
 
     if body.text is not None:
         text = body.text
@@ -192,13 +181,26 @@ class Test(object):
 
     @profiled
     def preprocessor(self, inp, profile_data=None):
-        return self._preprocessor.expand(None, inp)
+        # Test reconstruction as a side-effect.  We fail fatally,
+        # because reconstruction must always work, no exception.
+        plain = self._preprocessor.reconstruct(None, inp)
+        if plain != inp:
+            print("%%% input")
+            print(inp)
+            print("%%% plain")
+            print(plain)
+            raise Exception("Reconstruction error")
+        return self._preprocessor._expand("Parser_test", inp)
 
     @profiled
     def parser(self, inp, profile_data=None):
+        if type(inp) == tuple:
+            inp, headings = inp
+        else:
+            headings = None
         parser = mw.Parser(parseinfo=False)
-        ast = parser.parse(inp, "document", semantics=TestSemantics(parser),
-                           trace=False)
+        semantics = TestSemantics(parser, headings=headings, settings=self._preprocessor.settings)
+        ast = parser.parse(inp, "document", semantics=semantics, trace=False)
         body = ast[0]
         if body.text is not None:
             text = body.text
@@ -241,7 +243,8 @@ def main(default_dir, output_file, filter=None):
     files = os.listdir(directory)
     files.sort()
 
-    preprocessor = TestPreprocessor()
+    settings = TestSettings()
+    preprocessor = TestPreprocessor(settings=settings)
 
     tests = []
     for filename in files:
@@ -258,7 +261,7 @@ def main(default_dir, output_file, filter=None):
         for case in test_data:
             if case["type"] == "article":
                 ns, pn = preprocessor.settings.canonical_page_name(case["title"])
-                preprocessor.templates[(ns.prefix, pn)] = case["text"]
+                settings.templates[(ns.prefix, pn)] = case["text"]
             else:
                 test_index = test_index + 1
                 case["index"] = test_index

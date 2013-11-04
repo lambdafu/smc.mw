@@ -21,6 +21,7 @@ from . mw import mwParser as Parser
 from . html import entity_by_name, attribute_whitelist, css_filter, escape_id
 from . html import ITER_PUSH, ITER_POP, ITER_ADD, iter_structure
 from . settings import Settings
+from . semstate import SemanticsState
 
 try:
     basestring
@@ -321,93 +322,6 @@ def postprocess_toc(root, settings):
         root.insert(0, toc_block)
 
 
-class SemanticsState(dict):
-    # Internalize frozen states to conserve memory.
-    _intern = dict()
-
-    @classmethod
-    def _to_hashable(obj):
-        # Converts lists and values in dicts.
-        if isinstance(obj, list):
-            return tuple(_convert(i) for i in obj)
-        elif isinstance(obj, dict):
-            return frozenset((i, _convert(j)) for i, j in obj.items())
-        else:
-            return obj
-
-    def __init__(self, state):
-        # Allowed is a frozenset with atomic or tuple values.
-        def _convert(obj):
-            if isinstance(obj, tuple):
-                return list(obj)
-            else:
-                return obj
-        if state is not None:
-            things = [(key, _convert(value)) for key, value in state]
-            super(SemanticsState, self).__init__(things)
-        else:
-            super(SemanticsState, self).__init__()
-
-    def as_hashable(self):
-        def _convert(obj):
-            if isinstance(obj, list):
-                if len(obj) == 0:
-                    return None
-                else:
-                    return tuple(obj)
-            elif isinstance(obj, int):
-                if obj == 0:
-                    return None
-                else:
-                    return obj
-            else:
-                return obj
-
-        things = [(key, _convert(value)) for key, value in self.items()]
-        things = [(key, value) for key, value in things if value is not None]
-        if len(things) == 0:
-            return None
-        state = frozenset(things)
-        cached_state = SemanticsState._intern.get(state, None)
-        if cached_state is not None:
-            return cached_state
-        else:
-            self._intern[state] = state
-            return state
-
-    def increment(self, name):
-        cur = self.get(name, 0)
-        self[name] = cur + 1
-
-    def decrement(self, name):
-        cur = self.get(name, 0)
-        self[name] = cur - 1
-
-    def push_to(self, name, item):
-        cur = self.get(name, None)
-        if cur is None:
-            self[name] = [item]
-        else:
-            cur.append(item)
-
-    def pop_from(self, name):
-        cur = self.get(name, None)
-        # assert(cur is not None)
-        if cur is not None:
-            return cur.pop()
-        return None
-
-    def peek_at(self, name):
-        cur = self.get(name, None)
-        # assert(cur is not None)
-        if cur is not None:
-            return cur[-1]
-        return None
-
-    def get_list(self, name):
-        return self.get(name, [])
-
-
 class SemanticsTracer(object):
     """Wrap a semantics class and add extra trace output for debugging."""
 
@@ -451,19 +365,19 @@ class SemanticsTracer(object):
 
 
 class mwSemantics(object):
-    # Interface:
-    def _get_link_target(self, target):
-        target = target.replace(" ", "_")
-        return "./wiki/" + target
-
     # Goal: Something like
     # http://www.mediawiki.org/wiki/Parsoid/MediaWiki_DOM_spec
 
-    def __init__(self, context, settings=None):
+    def __init__(self, context, settings=None, headings=None):
         self._context = context
         if settings is None:
             settings = Settings()
         self.settings = settings
+        # Headings are accessed by end position.
+        if headings is None:
+            self.headings = None
+        else:
+            self.headings = dict([(h["end"], h) for h in headings])
 
     @contextmanager
     def _state(self):
@@ -472,38 +386,34 @@ class mwSemantics(object):
         state = state.as_hashable()
         self._context._state = state
 
-    def heading_content(self, ast):
-        # FIXME
-        return "".join(ast)
-
     def push_no_h6(self, ast):
         with self._state() as state:
-            state.push_to("no", r"======[ \t]*(\n|$)")  # use multiline?
+            state.push_to("no", r"======[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")  # use multiline?
         return ast
 
     def push_no_h5(self, ast):
         with self._state() as state:
-            state.push_to("no", r"=====[ \t]*(\n|$)")
+            state.push_to("no", r"=====[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
         return ast
 
     def push_no_h4(self, ast):
         with self._state() as state:
-            state.push_to("no", r"====[ \t]*(\n|$)")
+            state.push_to("no", r"====[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
         return ast
 
     def push_no_h3(self, ast):
         with self._state() as state:
-            state.push_to("no", r"===[ \t]*(\n|$)")
+            state.push_to("no", r"===[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
         return ast
 
     def push_no_h2(self, ast):
         with self._state() as state:
-            state.push_to("no", r"==[ \t]*(\n|$)")
+            state.push_to("no", r"==[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
         return ast
 
     def push_no_h1(self, ast):
         with self._state() as state:
-            state.push_to("no", r"=[ \t]*(\n|$)")
+            state.push_to("no", r"=[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
         return ast
 
     # Inline newline handling.
@@ -583,33 +493,54 @@ class mwSemantics(object):
 
         return html
 
+    def heading(self, ast):
+        pos = self._context._buffer._pos
+        headings = self.headings
+        if headings is None:
+            return ast
+        heading = headings.get(pos, None)
+        if heading is None:
+            return ast
+
+        # ast is a h element.
+        ast = deepcopy(ast)
+        span = etree.SubElement(ast, "span")
+        span.set("class", "mw-editsection")
+
+        bracket_left = etree.SubElement(span, "span")
+        bracket_left.set("class", "mw-editsection-bracket")
+        bracket_left.text = "["
+
+        link = etree.SubElement(span, "a")
+        title = heading["title"]
+        if title is None:
+            # FIXME
+            title = "(none)"
+        link.set("href", self.settings.make_url(title, action="edit", section=heading["section"]))
+        link.set("title", "Edit section: " + ast[0].get("id"))
+        link.text = "edit"
+
+        bracket_right = etree.SubElement(span, "span")
+        bracket_right.set("class", "mw-editsection-bracket")
+        bracket_right.text = "]"
+
+        return ast
+
+    def heading_content(self, ast):
+        # FIXME: Allow some inline elements.
+        return "".join(ast)
+
     def _h_el(self, level, ast):
         el = etree.Element("h" + str(level))
         text = ast.strip()
-        #el.set("id", ident)
 
-        span1 = etree.SubElement(el, "span")
-        span1.text = text
+        span = etree.SubElement(el, "span")
+        span.text = text
         ident = etree.tostring(el, encoding=unicode, method="text")
-        span1.set("class", "mw-headline")
-        span1.set("id", ident)
-
-        span2 = etree.SubElement(el, "span")
-        span2.set("class", "mw-editsection")
-
-        span3 = etree.SubElement(span2, "span")
-        span3.set("class", "mw-editsection-bracket")
-        span3.text = "["
-
-        link = etree.SubElement(span2, "a")
-        # FIXME: base url + page name
-        link.set("href", "")
-        link.set("title", "Edit section: " + text)
-        link.text = "edit"
-
-        span3 = etree.SubElement(span2, "span")
-        span3.set("class", "mw-editsection-bracket")
-        span3.text = "]"
+        # FIXME: May need various canonical forms:
+        # One as link target in toc, one as hint in edit link.
+        span.set("class", "mw-headline")
+        span.set("id", ident)
 
         el.tail = "\n"
         return el
@@ -994,6 +925,7 @@ class mwSemantics(object):
         return el
 
     def internal_link(self, ast):
+        settings = self.settings
         el = etree.Element("a")
         try:
             # FIXME: target could be arbitrary complicated, need to
@@ -1005,8 +937,22 @@ class mwSemantics(object):
             target = "".join(ast.target).strip()
         except:
             target = "BROKEN"
-        el.set("href", self._get_link_target(target))
-        el.set("title", target)
+        name = settings.canonical_page_name(target)
+        exists = settings.test_page_exists(name)
+        title = settings.expand_page_name(name[0], name[1])
+        cls = None
+        if exists:
+            url = settings.make_url(name)
+        else:
+            url = settings.make_url(name, action="edit", redlink="1")
+            title = settings.expand_page_name(*name) + " (" + settings.get_msg("missing") + ")"
+            cls = "new"
+
+        # Order of attributes matters for tests.
+        el.set("href", url)
+        if cls is not None:
+            el.set("class", cls)
+        el.set("title", title)
         self._trim_inline(ast.text)
         if ast.text and len(ast.text) > 0:
             inline = ast.text

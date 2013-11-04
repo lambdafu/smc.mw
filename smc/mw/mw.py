@@ -12,7 +12,7 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 from grako.parsing import * # @UnusedWildImport
 from grako.exceptions import * # @UnusedWildImport
 
-__version__ = '13.279.03.04.47'
+__version__ = '13.308.05.24.21'
 
 class mwParser(Parser):
     def __init__(self, whitespace='', nameguard=False, **kwargs):
@@ -130,6 +130,25 @@ class mwParser(Parser):
 
     @rule_def
     def _heading_block_(self):
+        self._heading_()
+        self.ast['@'] = self.last_node
+        self._blank_()
+        with self._optional():
+            self._comment_()
+        self._blank_()
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._pattern(r'\n')
+                with self._option():
+                    self._check_eof()
+                self._error('expecting one of: \n')
+        def block1():
+            self._empty_line_()
+        self._closure(block1)
+
+    @rule_def
+    def _heading_(self):
         with self._group():
             with self._choice():
                 with self._option():
@@ -146,17 +165,6 @@ class mwParser(Parser):
                     self._h1_()
                 self._error('no available options')
         self.ast['@'] = self.last_node
-        self._blank_()
-        with self._group():
-            with self._choice():
-                with self._option():
-                    self._pattern(r'\n')
-                with self._option():
-                    self._check_eof()
-                self._error('expecting one of: \n')
-        def block2():
-            self._empty_line_()
-        self._closure(block2)
 
     @rule_def
     def _h6_(self):
@@ -2197,6 +2205,9 @@ class mwSemantics(object):
         return ast
 
     def heading_block(self, ast):
+        return ast
+
+    def heading(self, ast):
         return ast
 
     def h6(self, ast):

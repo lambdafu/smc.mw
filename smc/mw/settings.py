@@ -8,6 +8,8 @@ import re
 MSGCAT = {
     "toc": {"en": "Contents",
             "de": "Inhaltsverzeichnis"},
+    "missing" : {"en": "page does not exist",
+                 "de": "Seite nicht vorhanden"}
 }
 
 
@@ -176,3 +178,29 @@ class Settings(object):
 
     def get_msg(self, msg):
         return self.msgcat[msg][self.language]
+
+    def test_page_exists(self, name):
+        """Name can be a (namespace, name) tuple, too."""
+        # By default, don't show any red links (links to missing
+        # pages).
+        return True
+
+    def make_url(self, name, **kwargs):
+        """Create an URL for page NAME (opt. namespace, name tuple).
+        KWARGS are GET parameters."""
+
+        if type(name) == tuple:
+            name = self.expand_page_name(name[0], name[1])
+        # FIXME: Escape?
+        name = name.replace(" ", "_")
+
+        if len(kwargs) == 0:
+            url = "/wiki/" + name
+        else:
+            url = "/index.php?title=" + name
+            # We need a stable order for testing.
+            args = ["action", "section", "redlink"]
+            for arg in args:
+                if arg in kwargs:
+                    url = url + "&" + arg + "=" + kwargs[arg]
+        return url
