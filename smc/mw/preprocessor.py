@@ -600,13 +600,6 @@ class PreprocessorFrame(object):
         return text
 
 
-def toc(ast):
-    for el in ast:
-        # QUIRK: Only pay attention to top-level headings.
-        if el.tag != "h":
-            continue
-        print ("Heading " + el.get("level") + " at " + el.get("pos"))
-
 class Preprocessor(object):
     def __init__(self, settings=None):
         if settings is None:
@@ -822,7 +815,7 @@ class Preprocessor(object):
     def get_template(self, namespace, pagename):
         return None
 
-def get_section(text_with_headings, section):
+def _get_section(text_with_headings, section):
     text, headings = text_with_headings
     nr_headings = len(headings)
     if section == 0:
@@ -846,4 +839,28 @@ def get_section(text_with_headings, section):
     else:
         return None
 
-    return text[start:stop]
+    return start, stop
+
+def get_section(text_with_headings, section):
+    text, headings = text_with_headings
+    bounds = _get_section(text_with_headings, section)
+    if bounds is None:
+        return None
+    start, stop = bounds
+    out = text[start:stop]
+    # QUIRK: Trailing whitespace is removed from output.
+    out = out.rstrip()
+    return out
+
+def replace_section(text_with_headings, section, replacement):
+    text, headings = text_with_headings
+    bounds = _get_section(text_with_headings, section)
+    if bounds is None:
+        return text
+    start, stop = bounds
+    if len(replacement) > 0:
+        replacement = replacement + "\n\n"
+    out = text[:start] + replacement + text[stop:]
+    # QUIRK: Trailing whitespace is removed from output.
+    out = out.rstrip()
+    return out

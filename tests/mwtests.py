@@ -176,7 +176,7 @@ class Test(object):
                     val = val[0]
             self.options[key] = val
         if "stages" not in data:
-            if "section" in self.options:
+            if "section" in self.options or "replace" in self.options:
                 self.stages = ["preprocessor"]
             else:
                 self.stages = ["preprocessor", "parser"]
@@ -199,6 +199,16 @@ class Test(object):
             out = self._preprocessor._reconstruct("Parser_test", inp)
             from smc.mw.preprocessor import get_section
             out = get_section(out, section)
+            if out == None:
+                out = ""
+            return out
+
+        if "replace" in self.options:
+            section, replacement = self.options["replace"]
+            section = int(section)
+            out = self._preprocessor._reconstruct("Parser_test", inp)
+            from smc.mw.preprocessor import replace_section
+            out = replace_section(out, section, replacement)
             if out == None:
                 out = ""
             return out
@@ -235,11 +245,10 @@ class Test(object):
         self.output = output
         if output == self.result:
             self.status = "pass"
+        elif not ("section" in self.options or "replace" in self.options) and tidy_equal(output, self.result):
+            self.status = "tidy"
         else:
-            if tidy_equal(output, self.result):
-                self.status = "tidy"
-            else:
-                self.status = "fail"
+            self.status = "fail"
         return self.status
 
     def skip(self):
@@ -283,7 +292,7 @@ def main(default_dir, output_file, filter=None):
                     result = test.skip()
                 elif "disabled" in test.options:
                     result = test.skip()
-                elif ("section" in test.options and test.options["section"][:2] == "T-") or "replace" in test.options or "disabled" in test.options:
+                elif ("section" in test.options and test.options["section"][:2] == "T-") or "disabled" in test.options:
                     result = test.skip()
                 elif "pst" in test.options or "msg" in test.options or "subpage" in test.options:
                     result = test.skip()
