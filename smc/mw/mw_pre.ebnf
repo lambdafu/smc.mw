@@ -115,7 +115,7 @@ onlyinclude_element = !onlyinclude element | ?/(.|\n)/? ;
 ignore = "</" ("noinclude" | "includeonly" | "onlyinclude" ) end_of_close_tag ">" ;
 
 
-heading = @( h6 | h5 | h4 | h3 | h2 | h1 ) &( blank [ comment_plain ] blank ( ?/\n/? | $ ) ) ;
+heading = ?/^|(?<=\n)/? @( h6 | h5 | h4 | h3 | h2 | h1 ) &( { blank [ comment_plain ] } * blank ( ?/\n/? | $ ) ) ;
 h6 = "======" push_no_h6 @heading_inline pop_no "======" ;
 h5 = "=====" push_no_h5 @heading_inline pop_no "=====" ;
 h4 = "====" push_no_h4 @heading_inline pop_no "====" ;
@@ -125,12 +125,12 @@ h1 = "=" push_no_h1 @heading_inline pop_no "=" ;
 
 (* SEMANTICS: Negative lookaheads to prevent inline elements from
    swallowing up the heading terminator (see check_ifnots).  *)
-push_no_h6 = () ; (* "======[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)" *)
-push_no_h5 = () ; (* "=====[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)" *)
-push_no_h4 = () ; (* "====[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)" *)
-push_no_h3 = () ; (* "===[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)" *)
-push_no_h2 = () ; (* "==[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)" *)
-push_no_h1 = () ; (* "=[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)" *)
+push_no_h6 = () ; (* "======([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)" *)
+push_no_h5 = () ; (* "=====([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)" *)
+push_no_h4 = () ; (* "====([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)" *)
+push_no_h3 = () ; (* "===([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)" *)
+push_no_h2 = () ; (* "==([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)" *)
+push_no_h1 = () ; (* "=([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)" *)
 
 heading_inline = push_no_nl @heading_content pop_no ;
 heading_content = { check_no ?/(.|\n)/? } * ;

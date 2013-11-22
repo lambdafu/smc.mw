@@ -242,32 +242,32 @@ class mw_preSemantics(object):
 
     def push_no_h6(self, ast):
         with self._state() as state:
-            state.push_to("no", r"======[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")  # use multiline?
+            state.push_to("no", r"======([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")  # use multiline?
         return ast
 
     def push_no_h5(self, ast):
         with self._state() as state:
-            state.push_to("no", r"=====[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"=====([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     def push_no_h4(self, ast):
         with self._state() as state:
-            state.push_to("no", r"====[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"====([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     def push_no_h3(self, ast):
         with self._state() as state:
-            state.push_to("no", r"===[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"===([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     def push_no_h2(self, ast):
         with self._state() as state:
-            state.push_to("no", r"==[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"==([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     def push_no_h1(self, ast):
         with self._state() as state:
-            state.push_to("no", r"=[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"=([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     # Inline newline handling.
@@ -304,15 +304,6 @@ class PreprocessorFrame(object):
         semantics = context.semantics
         ast = parser.parse(text, "document", semantics=semantics, trace=False,
                            whitespace='', nameguard=False)
-
-        if include:
-            # QUIRK: If onlyinclude is present, mangle the AST to only
-            # include those elements.
-            onlyinclude = ast.xpath("count(//onlyinclude)")
-            if onlyinclude > 0:
-                onlyinclude = ast.iter("onlyinclude")
-                ast = etree.Element("body")
-                ast.extend(onlyinclude)
 
         self.context = context
         self.title = title
@@ -441,16 +432,35 @@ class PreprocessorFrame(object):
             output = "\n" + output
         return output, headings
 
-    def _expand(self, ast=None):
-        headings = []
-
+    def _expand(self, ast=None, recover=False):
         if self.title in self.call_stack:
             return '<span class="error">Template loop detected: [[' + self.title + "]]</span>", None
 
+        def _recover_el(output, event, el):
+            if event == "start":
+                output = output + "<" + el.tag + el.get("attr")
+                if "end" not in el.attrib:
+                    # Self-closing.
+                    output = output + "/>"
+                else:
+                    output = output + ">"
+                    if el.text is not None:
+                        output = output + el.text
+            elif event == "end":
+                if "end" in el.attrib:
+                    output = output + el.get("end")
+            return output
+
         if ast is None:
             ast = self.ast
-
+        headings = []
         output = ""
+
+        # QUIRK: If in include-mode and onlyinclude is present, only
+        # include those elements.
+        onlyinclude = not recover and self.include and ast.xpath("count(//onlyinclude)") > 0
+        in_onlyinclude = False
+
         # By design, we ignore the top level element itself (this may
         # be "body" or "argument" or a template parameter, etc)
         iterator = itertools.chain.from_iterable([etree.iterwalk(el, events=("start", "end"))
@@ -461,55 +471,116 @@ class PreprocessorFrame(object):
             except StopIteration:
                 break
 
-            # Skip the children of this node.
+            if onlyinclude and not in_onlyinclude:
+                if el.tag == "onlyinclude":
+                    if event == "start":
+                        in_onlyinclude = True
+                    elif event == "end":
+                        in_onlyinclude = False
+                continue
+
+            # True if we should skip the children of this node after processing.
             skip = False
 
-            if event == "end":
-                if el.tag == "h":
+            if el.tag == "onlyinclude":
+                if recover:
+                    output = _recover_el(output, event, el)
+                else:
+                    if event == "start":
+                        in_onlyinclude = True
+                    elif event == "end":
+                        in_onlyinclude = False
+
+            if el.tag == "text":
+                # No special action for recover.
+                if event == "start":
+                    output = output + el.text
+                # Ignore end.
+            elif el.tag == "h":
+                # No special action for recover.
+                if event == "start":
+                    # QUIRK: Only h children of root are marked as
+                    # headings, to stop extract_section from going over
+                    # multiple tree levels.
+                    level = int(el.get("level"))
+                    if el.getparent() == ast:
+                        index = len(headings) + 1
+                        if self.include:
+                            section = "T-" + str(index)
+                        else:
+                            section = str(index)
+                        heading = { "begin": len(output),
+                                    "level": level,
+                                    "title": self.title,
+                                    "section": section }
+                        headings.append(heading)
+                    output = output + "=" * level
+                elif event == "end":
                     output = output + "=" * int(el.get("level"))
                     if el.getparent() == ast:
                         # For the main parser it is convenient to know the
                         # position of the end of a header.
                         headings[-1]["end"] = len(output)
-                # The end events are also needed to skip subtrees.
-            elif el.tag == "text":
-                output = output + el.text
-            elif el.tag == "h":
-                # QUIRK: Only h children of root are marked as
-                # headings, to stop extract_section from going over
-                # multiple tree levels.
-                if el.getparent() == ast:
-                    level = el.get("level")
-                    index = len(headings) + 1
-                    if self.include:
-                        section = "T-" + str(index)
-                    else:
-                        section = str(index)
-                    heading = { "begin": len(output),
-                                "title": self.title,
-                                "section": section }
-                    headings.append(heading)
-                level = int(el.get("level"))
-                output = output + "=" * level
-            elif el.tag == "noinclude" and self.include:
-                skip = True
-            elif el.tag == "includeonly" and not self.include:
-                skip = True
+            elif el.tag == "noinclude":
+                if recover:
+                    output = _recover_el(output, event, el)
+                elif event == "start" and self.include:
+                    skip = True
+            elif el.tag == "includeonly":
+                if recover:
+                    output = _recover_el(output, event, el)
+                elif event == "start" and not self.include:
+                    skip = True
             elif el.tag == "template":
-                pos = len(output)
-                text, heads = self._expand_template(el)
-                if heads:
-                    for heading in heads:
-                        heading["begin"] = heading["begin"] + pos
-                        heading["end"] = heading["end"] + pos
-                    headings.extend(heads)
-                output = output + text
-                skip = True
+                if recover:
+                    if event == "start":
+                        output = output + "{{"
+                    elif event == "end":
+                        output = output + "}}"
+                elif event == "start":
+                    pos = len(output)
+                    text, heads = self._expand_template(el)
+                    if heads:
+                        for heading in heads:
+                            heading["begin"] = heading["begin"] + pos
+                            heading["end"] = heading["end"] + pos
+                        headings.extend(heads)
+                    output = output + text
+                    skip = True
             elif el.tag == "argument":
-                output = output + self._expand_argument(el)
-                skip = True
+                if recover:
+                    if event == "start":
+                        output = output + "{{{"
+                    elif event == "end":
+                        output = output + "}}}"
+                elif event == "start":
+                    output = output + self._expand_argument(el)
+                    skip = True
+                # Ignore end.
             elif el.tag == "ignore":
-                skip = True
+                if event == "start":
+                    if recover:
+                        output = output + el.text
+                    else:
+                        skip = True
+                # Ignore end.
+            # The following elements can only occur in recover mode,
+            # as otherwise we skip the subtree that contains them.
+            elif el.tag == "name":
+                if recover and event == "start" and "first" not in el.attrib:
+                    output = output + "|"
+            elif el.tag == "value":
+                if recover and event == "start":
+                    if "unnamed" in el.attrib:
+                        output = output + "|"
+                    else:
+                        output = output + "="
+            elif el.tag == "default":
+                if recover and event == "start":
+                    output = output + "|"
+            elif el.tag == "comment":
+                if recover and event == "start":
+                    output = output + el.text
             else:
                 # All other elements (e.g. links) are transparent.
                 pass
@@ -524,73 +595,10 @@ class PreprocessorFrame(object):
 
         return output, headings
 
-    def expand(self, ast=None):
-        text, headings = self._expand(ast)
+    def expand(self, ast=None, recover=False):
+        text, headings = self._expand(ast, recover=recover)
         return text
 
-    def reconstruct(self, ast=None):
-        if ast is None:
-            ast = self.ast
-
-        output = ""
-        # By design, we ignore the top level element itself (this may
-        # be "body" or "argument" or a template parameter, etc)
-        iterator = itertools.chain.from_iterable([etree.iterwalk(el, events=("start", "end"))
-                                                  for el in ast])
-        while True:
-            try:
-                event, el = next(iterator)
-            except StopIteration:
-                break
-
-            if event == "end":
-                # Some elements may not have a closing element, or
-                # there may be attribute-like junk in the close
-                # element.  So we use an attribute.
-                if "end" in el.attrib:
-                    output = output + el.get("end")
-                elif el.tag == "template":
-                    output = output + "}}"
-                elif el.tag == "argument":
-                    output = output + "}}}"
-                elif el.tag == "h":
-                    output = output + "=" * int(el.get("level"))
-            elif el.tag == "text":
-                output = output + el.text
-            elif el.tag in ["noinclude", "includeonly", "onlyinclude"]:
-                output = output + "<" + el.tag + el.get("attr")
-                if "end" not in el.attrib:
-                    # Self-closing.
-                    output = output + "/>"
-                else:
-                    output = output + ">"
-                    if el.text is not None:
-                        output = output + el.text
-            elif el.tag == "template":
-                output = output + "{{"
-            elif el.tag == "name":
-                if "first" not in el.attrib:
-                    output = output + "|"
-            elif el.tag == "value":
-                if "unnamed" in el.attrib:
-                    output = output + "|"
-                else:
-                    output = output + "="
-            elif el.tag == "argument":
-                output = output + "{{{"
-            elif el.tag == "default":
-                output = output + "|"
-            elif el.tag == "ignore":
-                output = output + el.text
-            elif el.tag == "comment":
-                output = output + el.text
-            elif el.tag == "h":
-                output = output + "=" * int(el.get("level"))
-            else:
-                # All other elements (e.g. links) are transparent.
-                pass
-
-        return output
 
 def toc(ast):
     for el in ast:
@@ -618,9 +626,13 @@ class Preprocessor(object):
         frame = PreprocessorFrame(self, title, text, include=False)
         return frame.expand()
 
+    def _reconstruct(self, title, text):
+        frame = PreprocessorFrame(self, title, text, include=False)
+        return frame._expand(recover=True)
+
     def reconstruct(self, title, text):
         frame = PreprocessorFrame(self, title, text, include=False)
-        return frame.reconstruct()
+        return frame.expand(recover=True)
 
     def get_time(self, utc=False):
         return datetime.now()
@@ -809,3 +821,29 @@ class Preprocessor(object):
 
     def get_template(self, namespace, pagename):
         return None
+
+def get_section(text_with_headings, section):
+    text, headings = text_with_headings
+    nr_headings = len(headings)
+    if section == 0:
+        start = 0
+        if nr_headings == 0:
+            stop = len(text)
+        else:
+            stop = headings[0]["begin"]
+    elif section <= nr_headings:
+        start = headings[section - 1]["begin"]
+        level = headings[section - 1]["level"]
+        next_index = section
+        while next_index < nr_headings:
+            if headings[next_index]["level"] <= level:
+                break
+            next_index = next_index + 1
+        if next_index == nr_headings:
+            stop = len(text)
+        else:
+            stop = headings[next_index]["begin"]
+    else:
+        return None
+
+    return text[start:stop]

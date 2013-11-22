@@ -12,7 +12,7 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 from grako.parsing import * # @UnusedWildImport
 from grako.exceptions import * # @UnusedWildImport
 
-__version__ = '13.308.05.10.05'
+__version__ = '13.309.04.17.07'
 
 class mw_preParser(Parser):
     def __init__(self, whitespace='', nameguard=False, **kwargs):
@@ -356,6 +356,7 @@ class mw_preParser(Parser):
 
     @rule_def
     def _heading_(self):
+        self._pattern(r'^|(?<=\n)')
         with self._group():
             with self._choice():
                 with self._option():
@@ -374,9 +375,11 @@ class mw_preParser(Parser):
         self.ast['@'] = self.last_node
         with self._if():
             with self._group():
-                self._blank_()
-                with self._optional():
-                    self._comment_plain_()
+                def block1():
+                    self._blank_()
+                    with self._optional():
+                        self._comment_plain_()
+                self._closure(block1)
                 self._blank_()
                 with self._group():
                     with self._choice():

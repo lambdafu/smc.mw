@@ -388,32 +388,32 @@ class mwSemantics(object):
 
     def push_no_h6(self, ast):
         with self._state() as state:
-            state.push_to("no", r"======[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")  # use multiline?
+            state.push_to("no", r"======([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")  # use multiline?
         return ast
 
     def push_no_h5(self, ast):
         with self._state() as state:
-            state.push_to("no", r"=====[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"=====([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     def push_no_h4(self, ast):
         with self._state() as state:
-            state.push_to("no", r"====[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"====([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     def push_no_h3(self, ast):
         with self._state() as state:
-            state.push_to("no", r"===[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"===([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     def push_no_h2(self, ast):
         with self._state() as state:
-            state.push_to("no", r"==[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"==([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     def push_no_h1(self, ast):
         with self._state() as state:
-            state.push_to("no", r"=[ \t]*(?:<!--((?!-->).|\n)*(-->|$))?[ \t]*(\n|$)")
+            state.push_to("no", r"=([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)")
         return ast
 
     # Inline newline handling.

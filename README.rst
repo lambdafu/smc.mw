@@ -39,6 +39,20 @@ For specific differences, see the `test results`_.
 
 .. _test results: http://htmlpreview.github.io/?http://github.com/lambdafu/smc.mw/blob/master/tests/out/report-0002.html
 
+ToDo
+====
+
+Before release:
+* Replace sections.
+* Handle T-* sections (requires loading included template).
+
+Later:
+* Test 843: Section extraction, <pre> around bogus header (bug 10309)
+  This should be fixed, as it affects parser extensions (math element,
+  etc), too.  For this, the preprocessor grammar needs to include
+  specific (but not all) XML elements parsed (counterexample: div
+  elements are transparent for headings, pre elements are not).
+
 Thanks
 ======
 

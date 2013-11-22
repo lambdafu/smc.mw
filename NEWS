@@ -6,9 +6,15 @@ This file contains a list of user-visible changes.
 
 * Support Python 3.
 * Integrate Travis CI, Coveralls, and PyPI badges.
+* Preprocessor allows precise reconstruction of input.
+* Sections can be extracted and replaced (edit sections).
 * Generator fixes:
 ** Table of content generation fixed.
 ** I18n and l10n for Table of content header.
+** Internal link generation fixed.
+** Section edit links fixed.
+* Syntax fixes:
+** Allow comment at end of heading line.
 
 ===Version 0.2 (2013-10-06)===
 

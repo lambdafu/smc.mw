@@ -176,7 +176,10 @@ class Test(object):
                     val = val[0]
             self.options[key] = val
         if "stages" not in data:
-            self.stages = ["preprocessor", "parser"]
+            if "section" in self.options:
+                self.stages = ["preprocessor"]
+            else:
+                self.stages = ["preprocessor", "parser"]
         self.profile = OrderedDict()
 
     @profiled
@@ -190,6 +193,16 @@ class Test(object):
             print("%%% plain")
             print(plain)
             raise Exception("Reconstruction error")
+
+        if "section" in self.options:
+            section = int(self.options["section"])
+            out = self._preprocessor._reconstruct("Parser_test", inp)
+            from smc.mw.preprocessor import get_section
+            out = get_section(out, section)
+            if out == None:
+                out = ""
+            return out
+
         return self._preprocessor._expand("Parser_test", inp)
 
     @profiled
@@ -270,7 +283,7 @@ def main(default_dir, output_file, filter=None):
                     result = test.skip()
                 elif "disabled" in test.options:
                     result = test.skip()
-                elif "section" in test.options or "replace" in test.options or "disabled" in test.options:
+                elif ("section" in test.options and test.options["section"][:2] == "T-") or "replace" in test.options or "disabled" in test.options:
                     result = test.skip()
                 elif "pst" in test.options or "msg" in test.options or "subpage" in test.options:
                     result = test.skip()
