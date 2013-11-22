@@ -461,6 +461,21 @@ class PreprocessorFrame(object):
         onlyinclude = not recover and self.include and ast.xpath("count(//onlyinclude)") > 0
         in_onlyinclude = False
 
+        # We have to number headings when they are at the root, but
+        # what the root is depends on the inclusion status.
+        transparent = set()
+        if onlyinclude or not self.include:
+            transparent.add("onlyinclude")
+        if self.include:
+            transparent.add("includeonly")
+        else:
+            transparent.add("noinclude")
+        def _actual_parent(el):
+            while True:
+                el = el.getparent()
+                if el.tag not in transparent:
+                    return el
+
         # By design, we ignore the top level element itself (this may
         # be "body" or "argument" or a template parameter, etc)
         iterator = itertools.chain.from_iterable([etree.iterwalk(el, events=("start", "end"))
@@ -503,7 +518,7 @@ class PreprocessorFrame(object):
                     # headings, to stop extract_section from going over
                     # multiple tree levels.
                     level = int(el.get("level"))
-                    if el.getparent() == ast:
+                    if _actual_parent(el) == ast:
                         index = len(headings) + 1
                         if self.include:
                             section = "T-" + str(index)
@@ -517,7 +532,7 @@ class PreprocessorFrame(object):
                     output = output + "=" * level
                 elif event == "end":
                     output = output + "=" * int(el.get("level"))
-                    if el.getparent() == ast:
+                    if _actual_parent(el) == ast:
                         # For the main parser it is convenient to know the
                         # position of the end of a header.
                         headings[-1]["end"] = len(output)
@@ -619,12 +634,12 @@ class Preprocessor(object):
         frame = PreprocessorFrame(self, title, text, include=False)
         return frame.expand()
 
-    def _reconstruct(self, title, text):
-        frame = PreprocessorFrame(self, title, text, include=False)
+    def _reconstruct(self, title, text, include=False):
+        frame = PreprocessorFrame(self, title, text, include=include)
         return frame._expand(recover=True)
 
-    def reconstruct(self, title, text):
-        frame = PreprocessorFrame(self, title, text, include=False)
+    def reconstruct(self, title, text, include=False):
+        frame = PreprocessorFrame(self, title, text, include=include)
         return frame.expand(recover=True)
 
     def get_time(self, utc=False):
@@ -843,6 +858,8 @@ def _get_section(text_with_headings, section):
 
 def get_section(text_with_headings, section):
     text, headings = text_with_headings
+    print("T", text)
+    print ("H", headings)
     bounds = _get_section(text_with_headings, section)
     if bounds is None:
         return None

@@ -195,8 +195,13 @@ class Test(object):
             raise Exception("Reconstruction error")
 
         if "section" in self.options:
-            section = int(self.options["section"])
-            out = self._preprocessor._reconstruct("Parser_test", inp)
+            section = self.options["section"]
+            include = False
+            if section[:2] == "T-":
+                section = section[2:]
+                include = True
+            section = int(section)
+            out = self._preprocessor._reconstruct("Parser_test", inp, include=include)
             from smc.mw.preprocessor import get_section
             out = get_section(out, section)
             if out == None:
@@ -292,7 +297,7 @@ def main(default_dir, output_file, filter=None):
                     result = test.skip()
                 elif "disabled" in test.options:
                     result = test.skip()
-                elif ("section" in test.options and test.options["section"][:2] == "T-") or "disabled" in test.options:
+                elif "disabled" in test.options:
                     result = test.skip()
                 elif "pst" in test.options or "msg" in test.options or "subpage" in test.options:
                     result = test.skip()
