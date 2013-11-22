@@ -1,12 +1,13 @@
 include setup.py
 include setup.cfg
-include README.mediawiki
-include NEWS.mediawiki
+include README.rst
+include NEWS
 include LICENSE.txt
 include MANIFEST.in
 include Makefile
 global-include *.ebnf
 include tests/*
+include tests/mytidylib/*
 include tests/data/*
 include tests/static/*
 include tests/out/README.txt
@@ -14,6 +15,8 @@ include tests/out/report-0001.dat
 include tests/out/report-0001.html
 include tests/out/report-0002.dat
 include tests/out/report-0002.html
+include tests/out/report-0003.dat
+include tests/out/report-0003.html
 global-exclude *.pyc
 global-exclude *.pyo
 global-exclude *~

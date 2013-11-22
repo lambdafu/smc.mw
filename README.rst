@@ -37,7 +37,7 @@ For specific differences, see the `test results`_.
 * __TOC__ and other magic words must appear on a line on their own, while MediaWiki allows them everyhwere with some strange consequences.
 * Not supported right now: __NOEDITSECTION__, __NEWSECTIONLINK, __NONEWSECTIONLINK__.
 
-.. _test results: http://htmlpreview.github.io/?http://github.com/lambdafu/smc.mw/blob/master/tests/out/report-0002.html
+.. _test results: http://htmlpreview.github.io/?http://github.com/lambdafu/smc.mw/blob/master/tests/out/report-0003.html
 
 ToDo
 ====
