@@ -13,7 +13,7 @@ else:
 setup_info = dict(
     name="smc.mw",
     version="0.3",
-    packages=["smc.mw"],
+    packages=["smc", "smc.mw"],
     namespace_packages=["smc"],
     zip_safe=True,
     requires=["lxml", "grako"],
