@@ -659,7 +659,7 @@ class mwSemantics(object):
 
     def list_dt(self, ast):
         el = etree.Element("dt")
-        if "inline_dd" in ast:
+        if "inline_dd" in ast and ast.inline_dd is not None:
             inline = ast.inline_dd
             self._collect_inline(el, inline.dt)
             dd = etree.Element("dd")

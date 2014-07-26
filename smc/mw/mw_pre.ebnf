@@ -1,5 +1,5 @@
 (* Copyright 2013 semantics GmbH
-   Written by Marcus Brinkmann <m.brinkmann@semantics.de>
+   Written by Marcus Brinkmann <m.brinkmann@:semantics.de>
 
    PEG for VLS Wiki Markup Preprocessor
    ====================================
@@ -31,7 +31,7 @@ end_of_close_tag = ?/(\s(.|\n)*?)?(?=>)/? ;
 
 (* QUIRK: We do not strip a comment on a line by itself if it is the
    very first line in the document (cf. comment_alone).  *)
-document = elements: { element >> } * $ ;
+document = elements: { element ~ } * $ ;
 
 (* argument must come before template.  *)
 element = text | link | argument | template | heading | comment
@@ -70,7 +70,7 @@ argument_default = "|" content:argument_content ;
 template = [ bol: ?/(?<=^)|(?<=\n)/? ] "{{" name:template_content
            arguments: { template_arg } * "}}" ;
 template_content = { ! ( "}}" | "|" ) element } * ;
-template_arg = "|" @( template_named_arg | template_unnamed_arg ) ;
+template_arg = "|" @:( template_named_arg | template_unnamed_arg ) ;
 (* QUIRK: Empty name is allowed! *)
 template_named_arg = name:template_arg_name_content "=" content:template_content ;
 template_arg_name_content = { ! ( "}}" | "|" | "=" ) element } * ;
@@ -115,13 +115,13 @@ onlyinclude_element = !onlyinclude element | ?/(.|\n)/? ;
 ignore = "</" ("noinclude" | "includeonly" | "onlyinclude" ) end_of_close_tag ">" ;
 
 
-heading = ?/^|(?<=\n)/? @( h6 | h5 | h4 | h3 | h2 | h1 ) &( { blank [ comment_plain ] } * blank ( ?/\n/? | $ ) ) ;
-h6 = "======" push_no_h6 @heading_inline pop_no "======" ;
-h5 = "=====" push_no_h5 @heading_inline pop_no "=====" ;
-h4 = "====" push_no_h4 @heading_inline pop_no "====" ;
-h3 = "===" push_no_h3 @heading_inline pop_no "===" ;
-h2 = "==" push_no_h2 @heading_inline pop_no "==" ;
-h1 = "=" push_no_h1 @heading_inline pop_no "=" ;
+heading = ?/^|(?<=\n)/? @:( h6 | h5 | h4 | h3 | h2 | h1 ) &( { blank [ comment_plain ] } * blank ( ?/\n/? | $ ) ) ;
+h6 = "======" push_no_h6 @:heading_inline pop_no "======" ;
+h5 = "=====" push_no_h5 @:heading_inline pop_no "=====" ;
+h4 = "====" push_no_h4 @:heading_inline pop_no "====" ;
+h3 = "===" push_no_h3 @:heading_inline pop_no "===" ;
+h2 = "==" push_no_h2 @:heading_inline pop_no "==" ;
+h1 = "=" push_no_h1 @:heading_inline pop_no "=" ;
 
 (* SEMANTICS: Negative lookaheads to prevent inline elements from
    swallowing up the heading terminator (see check_ifnots).  *)
@@ -132,7 +132,7 @@ push_no_h3 = () ; (* "===([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)" *)
 push_no_h2 = () ; (* "==([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)" *)
 push_no_h1 = () ; (* "=([ \t]*(?:<!--((?!-->).|\n)*(-->|$)))*[ \t]*(\n|$)" *)
 
-heading_inline = push_no_nl @heading_content pop_no ;
+heading_inline = push_no_nl @:heading_content pop_no ;
 heading_content = { check_no ?/(.|\n)/? } * ;
 
 

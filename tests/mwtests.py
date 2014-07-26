@@ -155,13 +155,13 @@ class Test(object):
         else:
             self._preprocessor = preprocessor
 
-        self.options = ""
+        self.options = None
         for key, value in data.items():
             setattr(self, key, value)
 
         options_re = re.compile(r'\b([\w-]+)\s*(=\s*(?:"[^"]*"|\[\[[^\]]*\]\]|[\w-]+)(?:\s*,\s*(?:"[^"]*"|\[\[[^\]]*\]\]|[\w-]+))*)?')
         suboptions_re = re.compile(r'\s*[=,]\s*(?:"([^"]*)"|\[\[([^\]]*)\]\]|([\w-]+))')
-        options = self.options
+        options = self.options or ""
         self.options = {}
         for option in options_re.findall(options):
             key, val = option

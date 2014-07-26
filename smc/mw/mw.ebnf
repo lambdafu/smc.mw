@@ -66,11 +66,11 @@ empty_tail = { empty_line } * blank $ ;
 
 (* One empty line is allowed before a block, more create <br/>
    elements.  *)
-document_block = [ empty_line ] @block ;
+document_block = [ empty_line ] @:block ;
 empty_line = ?/[ \t]*\n/? ;
 
 (* Paragraph blocks need to come last, as they are catch-all.  *)
-block = ( block_not_par | paragraph ) >> ;
+block = ( block_not_par | paragraph ) ~ ;
 
 block_not_par = block_at_bol | block_anywhere ;
 
@@ -92,14 +92,14 @@ block_anywhere = html_block | html_block_no_wspre | html_p | pre
 
 (* QUIRK: empty lines after a heading are ignored (and never make it
    into a <br/>).  *)
-heading_block = @heading blank [ comment ] blank ( ?/\n/? | $ ) { empty_line } * ;
-heading = @( h6 | h5 | h4 | h3 | h2 | h1 ) ;
-h6 = "======" push_no_h6 @heading_inline pop_no "======" ; 
-h5 = "=====" push_no_h5 @heading_inline pop_no "=====" ; 
-h4 = "====" push_no_h4 @heading_inline pop_no "====" ; 
-h3 = "===" push_no_h3 @heading_inline pop_no "===" ; 
-h2 = "==" push_no_h2 @heading_inline pop_no "==" ; 
-h1 = "=" push_no_h1 @heading_inline pop_no "=" ; 
+heading_block = @:heading blank [ comment ] blank ( ?/\n/? | $ ) { empty_line } * ;
+heading = @:( h6 | h5 | h4 | h3 | h2 | h1 ) ;
+h6 = "======" push_no_h6 @:heading_inline pop_no "======" ;
+h5 = "=====" push_no_h5 @:heading_inline pop_no "=====" ;
+h4 = "====" push_no_h4 @:heading_inline pop_no "====" ;
+h3 = "===" push_no_h3 @:heading_inline pop_no "===" ;
+h2 = "==" push_no_h2 @:heading_inline pop_no "==" ;
+h1 = "=" push_no_h1 @:heading_inline pop_no "=" ;
 
 (* FIXME: Allow some (but by far not all) inline elements.
    sup, sub (MW bug 8393), i (MW bug 26375), b (MW r105284), span dir=rtl/ltr (MW bug 35167)
@@ -129,7 +129,7 @@ horizontal_rule_block = ?/-{4,}/? blank [ ?/\n/? ] ;
    ----------
 *)
 
-list_block = @list_list ( list_newline | $ );
+list_block = @:list_list ( list_newline | $ );
 list_list = ul_block | ol_block | dl_block ;
 list_newline = ?/\n/? check_bol_skip ;
 
@@ -142,14 +142,14 @@ push_bol_skip_ol = () ; (* "#" *)
 push_bol_skip_dl = () ; (* "[;:]" *)
 
 dt_or_dd = dl_dt | dl_dd ;
-dl_dt = ?/(?<=;)/? @list_dt ; 
-dl_dd = ?/(?<=:)/? @list_li ;
+dl_dt = ?/(?<=;)/? @:list_dt ;
+dl_dd = ?/(?<=:)/? @:list_li ;
 
 (* Quirk: If the item is followed by sublists, those sublists do not
    get their own li/dl.  *)
 list_li = ( sublists+:list_list | inline:li_inline ) { sublists+:list_sublist } * ;
-li_inline = push_no_nl @inline pop_no ;
-list_sublist = list_newline @list_list ;
+li_inline = push_no_nl @:inline pop_no ;
+list_sublist = list_newline @:list_list ;
 
 (* A dt may have the dd on the same line, but then sublists get their
    own item.  *)
@@ -168,12 +168,12 @@ push_ifnot_dt = () ; (* ":" *)
 
 (* QUIRK: First line must not only contain whitespace.  *)
 wspre_block = check_wspre &?/^/? " " !empty_line
-  push_bol_skip_wspre @wspre_inline pop_bol_skip ( ?/\n/? | $ );
+  push_bol_skip_wspre @:wspre_inline pop_bol_skip ( ?/\n/? | $ );
 wspre_inline = content:{ !block_anywhere wspre_inline_one } + ;
 (* FIXME: inline_impl_one_no_newline elements may contain newlines and
    must then use check_bol_skip.  *)
 wspre_inline_one = wspre_newline | inline_impl_one_no_newline ;
-wspre_newline = @empty_line check_bol_skip ;
+wspre_newline = @:empty_line check_bol_skip ;
 
 (* SEMANTICS: Skip over leading space character in wspre block.  *)
 push_bol_skip_wspre = () ; (* " " *)
@@ -223,16 +223,16 @@ notoc = blank "__NOTOC__" blank ( ?/\n/? | $ );
 forcetoc = blank "__FORCETOC__" blank ( ?/\n/? | $ );
 
 table_attribute_junk = { !html_attribute ?/[^ \t\n]*/? ?/[ \t]+/? } * ;
-table_attribute_one = @html_attribute [ table_attribute_junk ] ;
-table_attributes = [ table_attribute_junk ] @ { table_attribute_one } * ;
+table_attribute_one = @:html_attribute [ table_attribute_junk ] ;
+table_attributes = [ table_attribute_junk ] @: { table_attribute_one } * ;
 
 table_cell_attribute_junk = { !( "|" | html_attribute ) ?/[^| \t\n]*/? ?/[ \t]+/? } * ;
-table_cell_attribute_one = @html_attribute [ table_cell_attribute_junk ] ;
-table_cell_attributes = [ table_cell_attribute_junk ] @ { table_cell_attribute_one } * ;
+table_cell_attribute_one = @:html_attribute [ table_cell_attribute_junk ] ;
+table_cell_attributes = [ table_cell_attribute_junk ] @: { table_cell_attribute_one } * ;
 
 table_header_attribute_junk = { !( "|" | "!!" | "||" | html_attribute ) ?/(?:[^|! \t\n]+|!(?!!))*/? ?/[ \t]+/? } * ;
-table_header_attribute_one = @html_attribute [ table_header_attribute_junk ] ;
-table_header_attributes = [ table_header_attribute_junk ] @ { table_header_attribute_one } * ;
+table_header_attribute_one = @:html_attribute [ table_header_attribute_junk ] ;
+table_header_attributes = [ table_header_attribute_junk ] @: { table_header_attribute_one } * ;
 
 table_block = blank indent:?/:*/? "{|" attribs:table_attributes [ { empty_line } + [ caption:table_caption ] rows:table_rows ] blank "|}" blank ( ?/\n/? | $ ) ;
 
@@ -360,7 +360,7 @@ comment = ?/<!--(.|\n)*?-->/? ;
 
 (* HTML entities *)
 
-html_entity = "&" @( html_named_entity | html_numbered_entity ) ";" ;
+html_entity = "&" @:( html_named_entity | html_numbered_entity ) ";" ;
 html_named_entity = name: ?/[a-zA-Z0-9]+/? ;
 html_numbered_entity = "#" (number: ?/[0-9]+/? | ?/[xX]/? hexnumber: ?/[0-9a-fA-F]+/?) ;
 
@@ -369,9 +369,9 @@ html_numbered_entity = "#" (number: ?/[0-9]+/? | ?/[xX]/? hexnumber: ?/[0-9a-fA-
    can be, such as <br*/>, but not <, which is replaced in the HTML
    sanitizer (removeHTMLtags).  *)
 (* QUIRK: Attribute values can span multiple lines but do not respect bol_skip.  *)
-html_attribute_value_doublequote = '"' @ { ?/[^<"&]+/? | html_entity | nowiki | "&" } * '"' ;
-html_attribute_value_singlequote = "'" @ { ?/[^<'&]+/? | html_entity | nowiki | "&" } * "'" ;
-html_attribute_value_noquote = { ?/[a-zA-Z0-9!#$%()*,\-./:;<>?@[\]^_`{|}~]+/? | html_entity | "&" } + ;
+html_attribute_value_doublequote = '"' @: { ?/[^<"&]+/? | html_entity | nowiki | "&" } * '"' ;
+html_attribute_value_singlequote = "'" @: { ?/[^<'&]+/? | html_entity | nowiki | "&" } * "'" ;
+html_attribute_value_noquote = { ?/[a-zA-Z0-9!#$%()*,\-./:;<>?@:[\]^_`{|}~]+/? | html_entity | "&" } + ;
 html_attribute_value = html_attribute_value_doublequote | html_attribute_value_singlequote | html_attribute_value_noquote ;
 html_attribute = name:html_attribute_name multiline_blank "=" multiline_blank value:html_attribute_value  ;
 (* QUIRK: < is not allowed as junk.  *)
@@ -394,8 +394,8 @@ html_attribute_name = ( "class" | "dir" | "id" | "lang" | "title" | "style"
 
 (* At least one space required to separate the attribute name from the preceding token *)
 
-html_attribute_one = @html_attribute [ html_attribute_junk ] ;
-html_attributes = [ html_attribute_junk ] @{ html_attribute_one } * ;
+html_attribute_one = @:html_attribute [ html_attribute_junk ] ;
+html_attributes = [ html_attribute_junk ] @:{ html_attribute_one } * ;
 
 (* FIXME: All html inline elements are auto-closing, this may be more relaxed than MediaWiki (removeHTMLtags).  *)
 html_inline = "<" &html_inline_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:inline [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot ;
@@ -459,12 +459,12 @@ html_p_inline = push_wspre_off { !block_anywhere inline_impl_one } * pop_wspre ;
 html_table = blank "<" &html_table_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_table_content multiline_blank [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
 html_table_element = ?/(?i)(?:table)(?!\w)/? ;
 html_table_content = { html_table_content_item } * ;
-html_table_content_item = multiline_blank @html_table_tr ;
+html_table_content_item = multiline_blank @:html_table_tr ;
 
 html_table_tr = "<" &html_table_tr_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_table_tr_content multiline_blank [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
 html_table_tr_element = ?/(?i)(?:tr)(?!\w)/? ;
 html_table_tr_content = { html_table_tr_content_item } * ;
-html_table_tr_content_item = multiline_blank @( html_table_cell ) ;
+html_table_tr_content_item = multiline_blank @:( html_table_cell ) ;
 
 (* FIXME: Close td and th elements with missing close tags before accepting another one.  *)
 html_table_cell = "<" &html_table_cell_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_block_document [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
@@ -473,7 +473,7 @@ html_table_cell_element = ?/(?i)(?:td|th)(?!\w)/? ;
 html_list = "<" &html_list_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_list_content [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
 html_list_element = ?/(?i)(?:ul|ol)(?!\w)/? ;
 html_list_content = { html_list_content_item } * ;
-html_list_content_item = multiline_blank @( html_list_item ) ;
+html_list_content_item = multiline_blank @:( html_list_item ) ;
 
 html_list_item = "<" &html_list_item_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_block_no_wspre_document [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
 html_list_item_element = ?/(?i)(?:li)(?!\w)/? ;
@@ -481,7 +481,7 @@ html_list_item_element = ?/(?i)(?:li)(?!\w)/? ;
 html_dl = "<" &html_dl_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_dl_content [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
 html_dl_element = ?/(?i)(?:dl)(?!\w)/? ;
 html_dl_content = { html_dl_content_item } * ;
-html_dl_content_item = multiline_blank @( html_dl_item ) ;
+html_dl_content_item = multiline_blank @:( html_dl_item ) ;
 
 html_dl_item = "<" &html_dl_item_element name:push_ifnot_html_tag attribs:html_attributes multiline_blank html_attribute_junk ( "/>" | ">" content:html_block_no_wspre_document [ !check_ifnot ?/</\w+[ \t\n]*>/? ] ) pop_ifnot [ empty_line ];
 html_dl_item_element = ?/(?i)(?:dt|dd)(?!\w)/? ;
