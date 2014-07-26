@@ -55,6 +55,9 @@ The parser uses the grako_ parser generator for PEG grammars by ResQSoft Inc. an
 
 .. _grako: https://bitbucket.org/apalala/grako
 
+The following people contributed to smc.mw:
+
+* https://github.com/tobes
 
 Authors
 =======

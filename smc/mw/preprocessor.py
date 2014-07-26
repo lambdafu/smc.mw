@@ -10,7 +10,7 @@ import re
 from copy import deepcopy
 from contextlib import contextmanager
 from bisect import bisect_left
-import datetime
+from datetime import datetime
 
 from lxml import etree
 import sys
