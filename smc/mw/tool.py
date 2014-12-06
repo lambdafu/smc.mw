@@ -70,7 +70,7 @@ def process(input=None, output=None, start=None, stages=None,
         input = sys.stdin.read()
     else:
         filename = input
-        with open(input, "r") as fh:
+        with open(input, "rb") as fh:
             input = fh.read().decode("UTF-8")
 
     headings = None
