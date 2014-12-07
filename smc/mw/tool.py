@@ -7,7 +7,7 @@ from __future__ import absolute_import, unicode_literals
 import argparse
 import sys
 from collections import OrderedDict
-from functools import wraps, partial
+from functools import wraps
 from timeit import Timer
 
 from lxml import etree
@@ -20,6 +20,7 @@ def profiled(stage):
         @wraps(fn)
         def wrapper(*args, **kwargs):
             result = [None]
+
             def run():
                 result[0] = fn(*args, **kwargs)
             timer = Timer(stmt=run)
@@ -34,17 +35,14 @@ def profiled(stage):
 
 @profiled("plain")
 def run_plain(text, filename=None, start=None, profile_data=None,
-              trace=False):
-    if start is None:
-        start = "document"
-    return mw.Preprocessor().reconstruct(None, text)
+              trace=False, preprocessor=None):
+    return (preprocessor or mw.Preprocessor)().reconstruct(None, text)
+
 
 @profiled("preprocessor")
 def run_preprocessor(text, filename=None, start=None, profile_data=None,
-                     trace=False):
-    if start is None:
-        start = "document"
-    return mw.Preprocessor()._expand(None, text)
+                     trace=False, preprocessor=None):
+    return (preprocessor or mw.Preprocessor)()._expand(None, text)
 
 
 @profiled("parser")
@@ -52,7 +50,7 @@ def run_parser(text, filename=None, start=None, profile_data=None,
                trace=False, headings=None):
     if start is None:
         start = "document"
-    parser = mw.Parser(parseinfo=False,  whitespace='', nameguard=False)
+    parser = mw.Parser(parseinfo=False, whitespace='', nameguard=False)
     ast = parser.parse(text, start, filename=filename,
                        semantics=mw.Semantics(parser, headings=headings), trace=trace,
                        nameguard=False, whitespace='')
@@ -63,30 +61,26 @@ def run_parser(text, filename=None, start=None, profile_data=None,
     return text
 
 
-def process(input=None, output=None, start=None, stages=None,
-            profile=False, trace=False):
-    if input is None:
-        filename = "-"
-        input = sys.stdin.read()
-    else:
-        filename = input
-        with open(input, "rb") as fh:
-            input = fh.read().decode("UTF-8")
-
+def process_text(text, filename='-',
+                 start=None, stages=None, profile=False, trace=False,
+                 preprocessor=None):
     headings = None
     profile_data = OrderedDict()
     # If all stages are run, start only applies to the parser state.
     if stages is None:
-        result, headings = run_preprocessor(input, filename=filename,
-                                  profile_data=profile_data)
+        result, headings = run_preprocessor(text, filename=filename,
+                                            profile_data=profile_data,
+                                            preprocessor=preprocessor)
     elif stages == "preprocessor":
-        result, headings = run_preprocessor(input, filename=filename, start=start,
-                                  profile_data=profile_data)
+        result, headings = run_preprocessor(text, filename=filename, start=start,
+                                            profile_data=profile_data,
+                                            preprocessor=preprocessor)
     elif stages == "plain":
-        result = run_plain(input, filename=filename, start=start,
-                           profile_data=profile_data)
+        result = run_plain(text, filename=filename, start=start,
+                           profile_data=profile_data,
+                           preprocessor=preprocessor)
     else:
-        result = input
+        result = text
 
     if stages is None or stages == "parser":
         result = run_parser(result, filename=filename, start=start,
@@ -95,6 +89,20 @@ def process(input=None, output=None, start=None, stages=None,
     if profile:
         for data in profile_data.values():
             print("{stage}: {time:.3f} msecs".format(**data), file=sys.stderr)
+
+    return result
+
+
+def process(input=None, output=None, *args, **kwargs):
+    if input is None:
+        filename = "-"
+        input = sys.stdin.read()
+    else:
+        filename = input
+        with open(input, "rb") as fh:
+            input = fh.read().decode("UTF-8")
+
+    result = process_text(input, filename, *args, **kwargs)
 
     if sys.version < '3':
         result = result.encode("UTF-8")
@@ -132,7 +140,7 @@ def parse_args():
                         help="input file to process instead of stdin")
     return parser.parse_args()
 
-                                     
+
 def main():
     args = parse_args()
     process(**vars(args))
