@@ -6,8 +6,9 @@ from __future__ import absolute_import, unicode_literals
 
 import argparse
 import sys
+import os
 from collections import OrderedDict
-from functools import wraps
+from functools import wraps, partial
 from timeit import Timer
 
 from lxml import etree
@@ -93,6 +94,25 @@ def process_text(text, filename='-',
     return result
 
 
+class DirectoryPreprocessor(mw.Preprocessor):
+    def __init__(self, template_dir=None, **kwargs):
+        self._template_dir = template_dir
+        super(DirectoryPreprocessor, self).__init__(**kwargs)
+
+    def get_template(self, namespace, pagename):
+        if namespace.prefix != "template":
+            return None
+        if self._template_dir is None:
+            return None
+        tmpl_filename = os.path.join(self._template_dir, pagename)
+        if not os.path.exists(tmpl_filename):
+            tmpl_filename = os.path.join(self._template_dir, pagename.lower())
+        if os.path.exists(tmpl_filename):
+            with open(tmpl_filename, "rb") as fh:
+                return fh.read().decode("UTF-8")
+        return super(DirectoryPreprocessor, self).get_template(namespace, pagename)
+
+
 def process(input=None, output=None, *args, **kwargs):
     if input is None:
         filename = "-"
@@ -102,6 +122,7 @@ def process(input=None, output=None, *args, **kwargs):
         with open(input, "rb") as fh:
             input = fh.read().decode("UTF-8")
 
+    kwargs["preprocessor"] = partial(DirectoryPreprocessor, kwargs.pop("template_dir", None))
     result = process_text(input, filename, *args, **kwargs)
 
     if sys.version < '3':
@@ -125,6 +146,9 @@ def parse_args():
     stages_group.add_argument("-P", action="store_const",
                               dest="stages", const="parser",
                               help="only run the parser (not the preprocessor)")
+
+    parser.add_argument("-T", metavar="DIRECTORY", dest="template_dir",
+                        help="read templates from directory")
 
     parser.add_argument("-s", metavar="RULE", dest="start",
                         help="start parsing at the given rule")
