@@ -58,7 +58,8 @@ The parser uses the grako_ parser generator for PEG grammars by ResQSoft Inc. an
 The following people contributed to smc.mw:
 
 * https://github.com/tobes
-
+* https://github.com/miki725
+ 
 Authors
 =======
 
