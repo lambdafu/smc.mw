@@ -9,9 +9,9 @@ Current status:
    :target: http://travis-ci.org/lambdafu/smc.mw
 .. image:: https://coveralls.io/repos/lambdafu/smc.mw/badge.png?branch=master
   :target: https://coveralls.io/r/lambdafu/smc.mw?branch=master
-.. image:: https://pypip.in/v/smc.mw/badge.png
+.. image:: https://img.shields.io/pypi/v/smc.mw.svg
    :target: https://crate.io/packages/smc.mw/
-.. image:: https://pypip.in/d/smc.mw/badge.png
+.. image:: https://img.shields.io/pypi/dm/smc.mw.svg
    :target: https://crate.io/packages/smc.mw/
 
 Using
